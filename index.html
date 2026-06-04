@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Falar PT">
+  <meta name="theme-color" content="#1a1a2e">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>Falar PT — Portugees oefenen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f1a;
+      --bg2: #171728;
+      --bg3: #1e1e35;
+      --accent: #e8c547;
+      --accent2: #ff6b6b;
+      --accent3: #4ecdc4;
+      --text: #f0f0f8;
+      --text2: #9999bb;
+      --text3: #5555775;
+      --border: rgba(255,255,255,0.08);
+      --green: #4ecdc4;
+      --red: #ff6b6b;
+      --card-r: 16px;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ---- APP SHELL ---- */
+    #app {
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ---- HEADER ---- */
+    .app-header {
+      padding: 16px 20px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .app-logo {
+      font-family: 'Instrument Serif', serif;
+      font-size: 22px;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+    .app-logo span { color: var(--text2); font-style: italic; font-size: 14px; margin-left: 6px; }
+    .streak-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    /* ---- NAV TABS ---- */
+    .nav-tabs {
+      display: flex;
+      padding: 10px 16px;
+      gap: 6px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      flex-shrink: 0;
+      scrollbar-width: none;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+    .nav-tab {
+      flex-shrink: 0;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-tab.active {
+      background: var(--accent);
+      color: #0f0f1a;
+      border-color: var(--accent);
+    }
+
+    /* ---- SCROLL AREA ---- */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    /* ---- SCREENS ---- */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ---- HOME SCREEN ---- */
+    .home-hero {
+      background: linear-gradient(135deg, #1e1e35 0%, #16162a 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 24px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .home-hero::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 140px; height: 140px;
+      background: radial-gradient(circle, rgba(232,197,71,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .home-hero h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: 26px;
+      color: var(--text);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .home-hero h2 em { color: var(--accent); font-style: italic; }
+    .home-hero p { font-size: 14px; color: var(--text2); line-height: 1.5; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 14px;
+      text-align: center;
+    }
+    .stat-num { font-size: 24px; font-weight: 600; color: var(--accent); display: block; }
+    .stat-label { font-size: 11px; color: var(--text2); margin-top: 2px; display: block; }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text2);
+      margin-bottom: 10px;
+      margin-top: 20px;
+    }
+
+    .lesson-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lesson-card:active { transform: scale(0.98); background: var(--bg3); }
+    .lesson-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .lesson-icon.green { background: rgba(78,205,196,0.15); }
+    .lesson-icon.yellow { background: rgba(232,197,71,0.15); }
+    .lesson-icon.red { background: rgba(255,107,107,0.15); }
+    .lesson-info { flex: 1; }
+    .lesson-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+    .lesson-sub { font-size: 12px; color: var(--text2); }
+    .lesson-progress {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* ---- QUIZ SCREEN ---- */
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .quiz-back {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--text2);
+      cursor: pointer;
+    }
+    .quiz-counter {
+      font-size: 13px;
+      color: var(--text2);
+      font-weight: 500;
+    }
+    .quiz-score-pill {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .progress-track {
+      height: 3px;
+      background: var(--bg3);
+      border-radius: 2px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .progress-thumb {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent3));
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .question-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .q-cat {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .q-cat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .q-text {
+      font-family: 'Instrument Serif', serif;
+      font-size: 21px;
+      line-height: 1.4;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .q-blank {
+      display: inline-block;
+      border-bottom: 2px solid var(--accent);
+      min-width: 70px;
+      color: transparent;
+      padding: 0 4px;
+    }
+    .q-hint {
+      font-size: 13px;
+      color: var(--text2);
+      font-style: italic;
+    }
+    .q-verb-hint {
+      display: inline-block;
+      background: rgba(232,197,71,0.12);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+
+    .answer-area { margin-bottom: 12px; }
+
+    /* Multiple choice */
+    .mc-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mc-opt {
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      width: 100%;
+    }
+    .mc-opt:active { transform: scale(0.98); }
+    .mc-opt.correct { background: rgba(78,205,196,0.15); border-color: var(--green); color: var(--green); }
+    .mc-opt.wrong { background: rgba(255,107,107,0.12); border-color: var(--red); color: var(--red); }
+    .mc-opt.dimmed { opacity: 0.4; pointer-events: none; }
+
+    /* Text input */
+    .inp-wrap { position: relative; }
+    .oef-inp {
+      width: 100%;
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 56px 14px 16px;
+      font-size: 16px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      outline: none;
+      -webkit-appearance: none;
+      transition: border-color 0.2s;
+    }
+    .oef-inp:focus { border-color: var(--accent); }
+    .oef-inp.correct { border-color: var(--green); background: rgba(78,205,196,0.08); }
+    .oef-inp.wrong { border-color: var(--red); background: rgba(255,107,107,0.06); }
+    .inp-submit {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.15s;
+    }
+    .inp-submit:active { transform: translateY(-50%) scale(0.92); }
+    .inp-submit:disabled { background: var(--bg3); opacity: 0.4; cursor: default; }
+
+    /* Feedback */
+    .feedback-box {
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .feedback-box.ok { background: rgba(78,205,196,0.12); color: var(--green); border: 1px solid rgba(78,205,196,0.25); }
+    .feedback-box.nope { background: rgba(255,107,107,0.10); color: #ff9999; border: 1px solid rgba(255,107,107,0.2); }
+
+    .next-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #0f0f1a;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      display: none;
+      transition: all 0.15s;
+    }
+    .next-btn:active { transform: scale(0.98); }
+
+    /* ---- RESULTS ---- */
+    .result-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 28px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(232,197,71,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .result-emoji { font-size: 48px; margin-bottom: 12px; display: block; }
+    .result-score {
+      font-family: 'Instrument Serif', serif;
+      font-size: 52px;
+      color: var(--accent);
+      display: block;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .result-label { font-size: 18px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+    .result-sub { font-size: 14px; color: var(--text2); line-height: 1.5; }
+    .result-breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .breakdown-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .breakdown-num { font-size: 20px; font-weight: 600; color: var(--text); display: block; }
+    .breakdown-label { font-size: 11px; color: var(--text2); display: block; margin-top: 2px; }
+    .replay-btn {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      margin-bottom: 8px;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .replay-btn:active { background: var(--bg2); }
+    .home-btn {
+      width: 100%;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f0f1a;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .home-btn:active { transform: scale(0.98); }
+
+    /* ---- STATS SCREEN ---- */
+    .progress-section { margin-bottom: 20px; }
+    .progress-row {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+    }
+    .pr-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .pr-name { font-size: 14px; font-weight: 500; color: var(--text); }
+    .pr-val { font-size: 13px; font-weight: 600; color: var(--accent); }
+    .pr-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+    .pr-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent3)); transition: width 0.6s ease; }
+    .tips-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+    .tip-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+    .tip-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .tip-item span:first-child { font-size: 18px; flex-shrink: 0; }
+
+    /* ---- ANIMATIONS ---- */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pop {
+      0% { transform: scale(0.95); opacity: 0; }
+      60% { transform: scale(1.02); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .question-card { animation: slideUp 0.3s ease; }
+    .result-card { animation: pop 0.4s ease; }
+
+    /* ---- EMPTY STATES ---- */
+    .install-tip {
+      background: rgba(232,197,71,0.08);
+      border: 1px solid rgba(232,197,71,0.2);
+      border-radius: var(--card-r);
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .install-tip .icon { font-size: 20px; flex-shrink: 0; }
+    .install-tip p { font-size: 13px; color: var(--text2); line-height: 1.5; }
+    .install-tip strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header class="app-header">
+    <div class="app-logo">falar.pt <span>oefeningen</span></div>
+    <div class="streak-badge">🔥 <span id="streak-num">0</span> daags</div>
+  </header>
+
+  <nav class="nav-tabs">
+    <button class="nav-tab active" data-screen="home">Startpagina</button>
+    <button class="nav-tab" data-screen="quiz">Oefenen</button>
+    <button class="nav-tab" data-screen="stats">Voortgang</button>
+  </nav>
+
+  <div class="scroll-area">
+
+    <!-- HOME SCREEN -->
+    <div class="screen active" id="screen-home">
+      <div class="home-hero">
+        <h2>Bom dia!<br>Laten we <em>oefenen.</em></h2>
+        <p>Jij zit op A2–B1. Elke oefening brengt je dichter bij vloeiend spreken.</p>
+      </div>
+
+      <div id="install-banner" class="install-tip" style="display:none">
+        <span class="icon">📲</span>
+        <p><strong>Tip:</strong> Voeg toe aan beginscherm via Delen → "Zet op beginscherm" voor gebruik als app.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-num" id="stat-total">0</span>
+          <span class="stat-label">gedaan</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num" id="stat-pct">—</span>
+          <span class="stat-label">correct</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num" id="stat-streak">0</span>
+          <span class="stat-label">🔥 streak</span>
+        </div>
+      </div>
+
+      <div class="section-title">Kies een categorie</div>
+
+      <div class="lesson-card" data-mode="all">
+        <div class="lesson-icon yellow">🎯</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Alles door elkaar</div>
+          <div class="lesson-sub">Ser/estar · verleden · tegenwoordig</div>
+        </div>
+        <div class="lesson-progress" id="prog-all">→</div>
+      </div>
+
+      <div class="lesson-card" data-mode="ser">
+        <div class="lesson-icon green">⚖️</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Ser vs. estar</div>
+          <div class="lesson-sub">Permanent vs. tijdelijk</div>
+        </div>
+        <div class="lesson-progress" id="prog-ser">→</div>
+      </div>
+
+      <div class="lesson-card" data-mode="pres">
+        <div class="lesson-icon green">🟢</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Tegenwoordige tijd</div>
+          <div class="lesson-sub">-ar, -er, -ir + onregelmatig</div>
+        </div>
+        <div class="lesson-progress" id="prog-pres">→</div>
+      </div>
+
+      <div class="lesson-card" data-mode="pret">
+        <div class="lesson-icon red">⏪</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Verleden tijd</div>
+          <div class="lesson-sub">Pretérito perfeito</div>
+        </div>
+        <div class="lesson-progress" id="prog-pret">→</div>
+      </div>
+
+      <div class="lesson-card" data-mode="hard">
+        <div class="lesson-icon red">🔥</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Uitdaging</div>
+          <div class="lesson-sub">Alleen moeilijke vragen</div>
+        </div>
+        <div class="lesson-progress">→</div>
+      </div>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div class="screen" id="screen-quiz">
+      <div id="quiz-container"></div>
+    </div>
+
+    <!-- STATS SCREEN -->
+    <div class="screen" id="screen-stats">
+      <div class="section-title">Jouw voortgang</div>
+      <div class="progress-section">
+        <div class="progress-row">
+          <div class="pr-top"><span class="pr-name">Ser / estar</span><span class="pr-val" id="pr-ser-val">0%</span></div>
+          <div class="pr-bar"><div class="pr-fill" id="pr-ser" style="width:0%"></div></div>
+        </div>
+        <div class="progress-row">
+          <div class="pr-top"><span class="pr-name">Tegenwoordige tijd</span><span class="pr-val" id="pr-pres-val">0%</span></div>
+          <div class="pr-bar"><div class="pr-fill" id="pr-pres" style="width:0%"></div></div>
+        </div>
+        <div class="progress-row">
+          <div class="pr-top"><span class="pr-name">Verleden tijd</span><span class="pr-val" id="pr-pret-val">0%</span></div>
+          <div class="pr-bar"><div class="pr-fill" id="pr-pret" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <div class="section-title">Snelle tips</div>
+      <div class="tips-card">
+        <div class="tip-item"><span>⚖️</span><span><strong style="color:var(--text)">Ser vs estar:</strong> Tijdelijk gevoel, locatie, bezig zijn → estar. Al de rest → ser.</span></div>
+        <div class="tip-item"><span>🔤</span><span><strong style="color:var(--text)">-ar uitgang:</strong> -ei, -aste, -ou, -ámos, -aram in de verleden tijd.</span></div>
+        <div class="tip-item"><span>⚡</span><span><strong style="color:var(--text)">Onregelmatig:</strong> ser/ir = fui · ter = tive · fazer = fiz · vir = vim</span></div>
+        <div class="tip-item"><span>🗣️</span><span><strong style="color:var(--text)">Tip:</strong> Voeg "ontem" (gisteren) of "hoje" (vandaag) toe om je tijd duidelijk te maken.</span></div>
+        <div class="tip-item"><span>🇵🇹</span><span><strong style="color:var(--text)">In Portugal:</strong> "tás bem?" = "estás bem?" — de 'es-' wordt ingeslikt in gesproken taal.</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ---- ALL QUESTIONS ----
+const QUESTIONS = [
+  // SER / ESTAR
+  {cat:'ser',diff:1,type:'mc',zin:'A Maria ___ enfermeira.',tr:'Maria is verpleegster.',opts:['é','está','são'],ans:0,fb:'Beroep = altijd ser. → é enfermeira.'},
+  {cat:'ser',diff:1,type:'mc',zin:'Eu ___ muito cansado hoje.',tr:'Ik ben vandaag erg moe.',opts:['sou','estou','são'],ans:1,fb:'Tijdelijke toestand = estar. → estou cansado.'},
+  {cat:'ser',diff:1,type:'mc',zin:'O café ___ fechado agora.',tr:'Het café is nu gesloten.',opts:['é','está','foi'],ans:1,fb:'Tijdelijke toestand = estar. → está fechado.'},
+  {cat:'ser',diff:1,type:'mc',zin:'Eles ___ portugueses.',tr:'Zij zijn Portugees.',opts:['são','estão','ser'],ans:0,fb:'Nationaliteit = ser. → são portugueses.'},
+  {cat:'ser',diff:2,type:'mc',zin:'A sopa ___ quente.',tr:'De soep is (nu) warm.',opts:['é','está','foi'],ans:1,fb:'Tijdelijke toestand = estar. De soep is nu warm maar koelt af.'},
+  {cat:'ser',diff:2,type:'mc',zin:'O fogo ___ quente.',tr:'Vuur is heet (van nature).',opts:['é','está','ser'],ans:0,fb:'Inherente eigenschap = ser. Vuur is altijd heet.'},
+  {cat:'ser',diff:2,type:'mc',zin:'Onde ___ o banco?',tr:'Waar is de bank?',opts:['é','está','foi'],ans:1,fb:'Locatie = estar. → Onde está o banco?'},
+  {cat:'ser',diff:2,type:'mc',zin:'___ duas horas da tarde.',tr:'Het is twee uur \'s middags.',opts:['São','Estão','É'],ans:0,fb:'Tijdsaanduiding = ser. → São duas horas.'},
+  {cat:'ser',diff:3,type:'mc',zin:'Ela ___ muito diferente hoje.',tr:'Ze is vandaag heel anders.',opts:['é','está','foi'],ans:1,fb:'Estar voor een tijdelijke verandering in gedrag/uiterlijk.'},
+  {cat:'ser',diff:3,type:'mc',zin:'Este bolo ___ delicioso!',tr:'Deze taart is heerlijk!',opts:['é','está','foi'],ans:1,fb:'Smaak na proeven = estar. "Está delicioso" = het smaakt nu heerlijk.'},
+  {cat:'ser',diff:2,type:'mc',zin:'Hoje ___ segunda-feira.',tr:'Vandaag is het maandag.',opts:['é','está','são'],ans:0,fb:'Dag van de week = ser. → Hoje é segunda-feira.'},
+  {cat:'ser',diff:1,type:'mc',zin:'Ele ___ médico.',tr:'Hij is dokter.',opts:['é','está','ser'],ans:0,fb:'Beroep = ser. → é médico.'},
+
+  // TEGENWOORDIGE TIJD
+  {cat:'pres',diff:1,type:'inp',zin:'Eu ___ (falar) com o meu vizinho.',tr:'Ik praat met mijn buurman.',ans:'falo',fb:'falar → eu falo. (-ar: stam + o)'},
+  {cat:'pres',diff:1,type:'inp',zin:'Tu ___ (morar) perto do mar?',tr:'Woon jij vlakbij de zee?',ans:'moras',fb:'morar → tu moras. (-ar: stam + as)'},
+  {cat:'pres',diff:1,type:'inp',zin:'Ela ___ (trabalhar) num hospital.',tr:'Zij werkt in een ziekenhuis.',ans:'trabalha',fb:'trabalhar → ela trabalha. (-ar: stam + a)'},
+  {cat:'pres',diff:1,type:'inp',zin:'Nós ___ (comer) juntos ao jantar.',tr:'Wij eten samen aan het avondeten.',ans:'comemos',fb:'comer → nós comemos. (-er: stam + emos)'},
+  {cat:'pres',diff:1,type:'inp',zin:'Vocês ___ (beber) vinho?',tr:'Drinken jullie wijn?',ans:'bebem',fb:'beber → vocês bebem. (-er: stam + em)'},
+  {cat:'pres',diff:2,type:'inp',zin:'Eu ___ (ir) ao mercado esta tarde.',tr:'Ik ga vanmiddag naar de markt.',ans:'vou',fb:'ir is onregelmatig: vou, vais, vai, vamos, vão.'},
+  {cat:'pres',diff:2,type:'inp',zin:'Ele ___ (ter) uma casa em Lisboa.',tr:'Hij heeft een huis in Lissabon.',ans:'tem',fb:'ter is onregelmatig: tenho, tens, tem, temos, têm.'},
+  {cat:'pres',diff:2,type:'inp',zin:'O que tu ___ (fazer) agora?',tr:'Wat doe jij nu?',ans:'fazes',fb:'fazer → tu fazes. (eu faço, tu fazes, ele faz)'},
+  {cat:'pres',diff:2,type:'inp',zin:'Eu não ___ (poder) vir amanhã.',tr:'Ik kan morgen niet komen.',ans:'posso',fb:'poder → eu posso. (posso, podes, pode, podemos, podem)'},
+  {cat:'pres',diff:2,type:'inp',zin:'Tu ___ (conhecer) a Ana?',tr:'Ken jij Ana?',ans:'conheces',fb:'conhecer → tu conheces. Conhecer = persoonlijk kennen.'},
+  {cat:'pres',diff:2,type:'inp',zin:'Eu ___ (saber) onde fica.',tr:'Ik weet waar het is.',ans:'sei',fb:'saber is onregelmatig: sei, sabes, sabe, sabemos, sabem.'},
+  {cat:'pres',diff:2,type:'inp',zin:'Vocês ___ (vir) à festa no sábado?',tr:'Komen jullie zaterdag naar het feest?',ans:'vêm',fb:'vir is onregelmatig: venho, vens, vem, vimos, vêm.'},
+  {cat:'pres',diff:3,type:'mc',zin:'Eu ___ a Ana há cinco anos.',tr:'Ik ken Ana al vijf jaar.',opts:['sei','conheço','percebo'],ans:1,fb:'Mensen kennen = conhecer. → conheço a Ana.'},
+  {cat:'pres',diff:3,type:'inp',zin:'Eu ___ (ouvir) música todos os dias.',tr:'Ik luister elke dag naar muziek.',ans:'ouço',fb:'ouvir → eu ouço. (onregelmatig eerste persoon)'},
+  {cat:'pres',diff:3,type:'inp',zin:'Vocês ___ (trazer) comida para a festa?',tr:'Brengen jullie eten mee?',ans:'trazem',fb:'trazer → vocês trazem. (eu trago, tu trazes, ele traz)'},
+  {cat:'pres',diff:1,type:'inp',zin:'Tu ___ (gostar) de peixe?',tr:'Hou jij van vis?',ans:'gostas',fb:'gostar → tu gostas. Let op: gostar DE iets = houden van.'},
+  {cat:'pres',diff:2,type:'mc',zin:'Eu ___ (pedir) a conta ao empregado.',tr:'Ik vraag de rekening aan de ober.',opts:['peço','pido','pedo'],ans:0,fb:'pedir → eu peço. (onregelmatig: peço, pedes, pede, pedimos, pedem)'},
+  {cat:'pres',diff:1,type:'inp',zin:'Nós ___ (precisar) de ajuda.',tr:'Wij hebben hulp nodig.',ans:'precisamos',fb:'precisar → nós precisamos. Precisar DE iets = nodig hebben.'},
+  {cat:'pres',diff:2,type:'inp',zin:'Ela ___ (dormir) pouco durante a semana.',tr:'Zij slaapt weinig doordeweeks.',ans:'dorme',fb:'dormir → ela dorme. Let op: eu durmo, tu dormes, ela dorme.'},
+
+  // VERLEDEN TIJD
+  {cat:'pret',diff:1,type:'inp',zin:'Ontem eu ___ (comer) bacalhau.',tr:'Gisteren at ik kabeljauw.',ans:'comi',fb:'comer → eu comi. (-er verleden: stam + i)'},
+  {cat:'pret',diff:1,type:'inp',zin:'Tu ___ (falar) com ela ontem?',tr:'Heb jij gisteren met haar gesproken?',ans:'falaste',fb:'falar → tu falaste. (-ar verleden: stam + aste)'},
+  {cat:'pret',diff:1,type:'inp',zin:'Ela ___ (partir) cedo esta manhã.',tr:'Zij vertrok vroeg vanochtend.',ans:'partiu',fb:'partir → ela partiu. (-ir verleden: stam + iu)'},
+  {cat:'pret',diff:1,type:'inp',zin:'Nós ___ (beber) vinho ao jantar.',tr:'Wij dronken wijn bij het avondeten.',ans:'bebemos',fb:'beber → nós bebemos. Identiek aan tegenwoordige tijd — context maakt het duidelijk!'},
+  {cat:'pret',diff:1,type:'inp',zin:'Vocês ___ (trabalhar) ontem?',tr:'Hebben jullie gisteren gewerkt?',ans:'trabalharam',fb:'trabalhar → vocês trabalharam. (-ar: stam + aram)'},
+  {cat:'pret',diff:2,type:'inp',zin:'Eu ___ (ir) à praia no fim de semana.',tr:'Ik ging in het weekend naar het strand.',ans:'fui',fb:'ir/ser verleden tijd: fui, foste, foi, fomos, foram.'},
+  {cat:'pret',diff:2,type:'inp',zin:'Eles ___ (ter) muita sorte.',tr:'Zij hadden veel geluk.',ans:'tiveram',fb:'ter → tiveram. (tive, tiveste, teve, tivemos, tiveram)'},
+  {cat:'pret',diff:2,type:'inp',zin:'O que tu ___ (fazer) ontem à noite?',tr:'Wat deed jij gisteren avond?',ans:'fizeste',fb:'fazer → tu fizeste. (fiz, fizeste, fez, fizemos, fizeram)'},
+  {cat:'pret',diff:2,type:'inp',zin:'Ela ___ (vir) de comboio.',tr:'Zij kwam met de trein.',ans:'veio',fb:'vir → veio. (vim, vieste, veio, viemos, vieram)'},
+  {cat:'pret',diff:2,type:'inp',zin:'Esta manhã eu ___ (acordar) cedo.',tr:'Vanochtend werd ik vroeg wakker.',ans:'acordei',fb:'acordar → eu acordei. (-ar: stam + ei)'},
+  {cat:'pret',diff:2,type:'inp',zin:'Tu ___ (perceber) o que ele disse?',tr:'Begreep jij wat hij zei?',ans:'percebeste',fb:'perceber → tu percebeste. (-er: stam + este)'},
+  {cat:'pret',diff:2,type:'inp',zin:'Nós ___ (sair) tarde ontem à noite.',tr:'Wij gingen gisteren laat weg.',ans:'saímos',fb:'sair → saímos. (saí, saíste, saiu, saímos, saíram)'},
+  {cat:'pret',diff:3,type:'inp',zin:'Eu ___ (trazer) vinho para o jantar.',tr:'Ik bracht wijn mee voor het diner.',ans:'trouxe',fb:'trazer → trouxe. Sterk onregelmatig! (trouxe, trouxeste, trouxe, trouxemos, trouxeram)'},
+  {cat:'pret',diff:3,type:'inp',zin:'Ontem à noite eu ___ (ler) um livro.',tr:'Gisteren avond las ik een boek.',ans:'li',fb:'ler → eu li. (li, leste, leu, lemos, leram)'},
+  {cat:'pret',diff:3,type:'inp',zin:'Eles ___ (dizer) que chegam amanhã.',tr:'Zij zeiden dat ze morgen aankomen.',ans:'disseram',fb:'dizer → disseram. (disse, disseste, disse, dissemos, disseram)'},
+  {cat:'pret',diff:3,type:'inp',zin:'Tu ___ (vir) de carro ou de comboio?',tr:'Kwam jij met de auto of de trein?',ans:'vieste',fb:'vir → tu vieste. (vim, vieste, veio, viemos, vieram)'},
+  {cat:'pret',diff:2,type:'inp',zin:'Eu nunca ___ (ver) o mar antes.',tr:'Ik had de zee nooit eerder gezien.',ans:'vi',fb:'ver → eu vi. (vi, viste, viu, vimos, viram)'},
+  {cat:'pret',diff:3,type:'mc',zin:'Na semana passada eu ___ muito trabalho.',tr:'Vorige week had ik veel werk.',opts:['tive','tinha','teve'],ans:0,fb:'Afgeronde actie = pretérito perfeito → eu tive.'},
+  {cat:'pret',diff:1,type:'inp',zin:'Ontem eu ___ (comprar) pão na padaria.',tr:'Gisteren kocht ik brood bij de bakker.',ans:'comprei',fb:'comprar → eu comprei. (-ar: stam + ei)'},
+  {cat:'pret',diff:2,type:'inp',zin:'Ele ___ (esquecer) o casaco em casa.',tr:'Hij vergat zijn jas thuis.',ans:'esqueceu',fb:'esquecer → ele esqueceu. (-er: stam + eu)'},
+  {cat:'pret',diff:3,type:'inp',zin:'Eu não ___ (poder) dormir.',tr:'Ik kon niet slapen.',ans:'pude',fb:'poder → eu pude. (pude, pudeste, pôde, pudemos, puderam)'},
+  {cat:'pret',diff:3,type:'inp',zin:'Nós ___ (ser) muito felizes lá.',tr:'Wij waren daar erg gelukkig.',ans:'fomos',fb:'ser verleden tijd = fomos. Zelfde als ir — context maakt het duidelijk.'},
+];
+
+// ---- STATE ----
+let state = JSON.parse(localStorage.getItem('falar_state') || '{}');
+state.totalDone = state.totalDone || 0;
+state.totalCorrect = state.totalCorrect || 0;
+state.catCorrect = state.catCorrect || {ser:0,pres:0,pret:0};
+state.catDone = state.catDone || {ser:0,pres:0,pret:0};
+state.streak = state.streak || 0;
+state.lastDay = state.lastDay || null;
+
+function saveState() { localStorage.setItem('falar_state', JSON.stringify(state)); }
+
+function updateStreak() {
+  const today = new Date().toDateString();
+  if (state.lastDay === today) return;
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  if (state.lastDay === yesterday) state.streak++;
+  else if (state.lastDay !== today) state.streak = 1;
+  state.lastDay = today;
+  saveState();
+}
+
+// ---- NAVIGATION ----
+let currentScreen = 'home';
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const s = tab.dataset.screen;
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.screen').forEach(sc => sc.classList.remove('active'));
+    document.getElementById('screen-' + s).classList.add('active');
+    currentScreen = s;
+    if (s === 'home') refreshHome();
+    if (s === 'stats') refreshStats();
+  });
+});
+
+// ---- QUIZ ENGINE ----
+let quizQ = [], quizIdx = 0, quizCorrect = 0, quizMode = 'all';
+
+function getQuestions(mode) {
+  let pool = QUESTIONS;
+  if (mode === 'ser') pool = QUESTIONS.filter(q => q.cat === 'ser');
+  else if (mode === 'pres') pool = QUESTIONS.filter(q => q.cat === 'pres');
+  else if (mode === 'pret') pool = QUESTIONS.filter(q => q.cat === 'pret');
+  else if (mode === 'hard') pool = QUESTIONS.filter(q => q.diff === 3);
+  return shuffle([...pool]).slice(0, Math.min(15, pool.length));
+}
+
+function shuffle(arr) {
+  for (let i = arr.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function startQuiz(mode) {
+  quizMode = mode;
+  quizQ = getQuestions(mode);
+  quizIdx = 0;
+  quizCorrect = 0;
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('[data-screen="quiz"]').classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-quiz').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const container = document.getElementById('quiz-container');
+  if (quizIdx >= quizQ.length) { renderResult(); return; }
+  const q = quizQ[quizIdx];
+  const catColors = {ser:'#e8c547',pres:'#4ecdc4',pret:'#ff6b6b'};
+  const catLabels = {ser:'Ser / estar',pres:'Tegenwoordige tijd',pret:'Verleden tijd'};
+  const pct = Math.round(quizIdx/quizQ.length*100);
+
+  const zinHtml = q.zin.replace('___', '<span class="q-blank">___</span>');
+
+  let inputHtml = '';
+  if (q.type === 'mc') {
+    inputHtml = `<div class="mc-grid">${q.opts.map((o,i) =>
+      `<button class="mc-opt" data-i="${i}">${o}</button>`
+    ).join('')}</div>`;
+  } else {
+    inputHtml = `<div class="inp-wrap">
+      <input type="text" class="oef-inp" placeholder="Typ de werkwoordsvorm..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button class="inp-submit" id="inp-go">↵</button>
+    </div>`;
+  }
+
+  container.innerHTML = `
+    <div class="quiz-header">
+      <button class="quiz-back" id="quiz-back-btn">← Terug</button>
+      <div class="quiz-counter">${quizIdx+1} / ${quizQ.length}</div>
+      <div class="quiz-score-pill">✓ ${quizCorrect}</div>
+    </div>
+    <div class="progress-track"><div class="progress-thumb" style="width:${pct}%"></div></div>
+    <div class="question-card">
+      <div class="q-cat">
+        <span class="q-cat-dot" style="background:${catColors[q.cat]}"></span>
+        <span style="color:${catColors[q.cat]}">${catLabels[q.cat]}</span>
+      </div>
+      <div class="q-text">${zinHtml}</div>
+      <div class="q-hint">${q.tr}</div>
+      ${q.type==='inp' ? `<span class="q-verb-hint">${q.zin.match(/\(([^)]+)\)/)?.[1] || ''}</span>` : ''}
+    </div>
+    <div class="answer-area">${inputHtml}</div>
+    <div class="feedback-box" id="fb"></div>
+    <button class="next-btn" id="next-btn">${quizIdx < quizQ.length-1 ? 'Volgende →' : 'Resultaat bekijken →'}</button>
+  `;
+
+  document.getElementById('quiz-back-btn').addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-screen="home"]').classList.add('active');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-home').classList.add('active');
+    refreshHome();
+  });
+
+  document.getElementById('next-btn').addEventListener('click', () => {
+    quizIdx++;
+    renderQuestion();
+  });
+
+  if (q.type === 'mc') {
+    container.querySelectorAll('.mc-opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const chosen = parseInt(btn.dataset.i);
+        container.querySelectorAll('.mc-opt').forEach(b => {
+          const k = parseInt(b.dataset.i);
+          if (k === q.ans) b.classList.add('correct');
+          else if (k === chosen) b.classList.add('wrong');
+          else b.classList.add('dimmed');
+          b.disabled = true;
+        });
+        handleAnswer(chosen === q.ans, q.opts[q.ans], q);
+      });
+    });
+  } else {
+    const inp = container.querySelector('.oef-inp');
+    const goBtn = container.querySelector('#inp-go');
+    const submit = () => {
+      const val = inp.value.trim();
+      if (!val) return;
+      if (goBtn.disabled) return;
+      goBtn.disabled = true;
+      inp.disabled = true;
+      const ok = val.toLowerCase() === q.ans.toLowerCase();
+      inp.classList.add(ok ? 'correct' : 'wrong');
+      handleAnswer(ok, q.ans, q);
+    };
+    goBtn.addEventListener('click', submit);
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+    setTimeout(() => inp.focus(), 100);
+  }
+}
+
+function handleAnswer(ok, ans, q) {
+  const fb = document.getElementById('fb');
+  fb.className = 'feedback-box ' + (ok ? 'ok' : 'nope');
+  fb.innerHTML = ok
+    ? `✓ Correct! <strong>${ans}</strong>`
+    : `✗ Juist: <strong>${ans}</strong> — ${q.fb}`;
+  fb.style.display = 'block';
+  document.getElementById('next-btn').style.display = 'block';
+
+  if (ok) quizCorrect++;
+  state.totalDone++;
+  state.catDone[q.cat] = (state.catDone[q.cat]||0) + 1;
+  if (ok) {
+    state.totalCorrect++;
+    state.catCorrect[q.cat] = (state.catCorrect[q.cat]||0) + 1;
+  }
+  updateStreak();
+  saveState();
+}
+
+function renderResult() {
+  const pct = Math.round(quizCorrect/quizQ.length*100);
+  const emojis = pct>=90?'🏆':pct>=70?'⭐':pct>=50?'💪':'📚';
+  const labels = pct>=90?['Uitstekend!','Je beheerst dit geweldig. Probeer de uitdaging!']:
+                 pct>=70?['Goed bezig!','Blijf oefenen — je zit op de goede weg.']:
+                 pct>=50?['Niet slecht!','Herhaal de patronen en probeer opnieuw.']:
+                         ['Blijven oefenen!','Elke keer beter. Geduld loont!'];
+
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="result-card">
+      <span class="result-emoji">${emojis}</span>
+      <span class="result-score">${quizCorrect}/${quizQ.length}</span>
+      <div class="result-label">${labels[0]}</div>
+      <div class="result-sub">${labels[1]}</div>
+    </div>
+    <div class="result-breakdown">
+      <div class="breakdown-item">
+        <span class="breakdown-num">${pct}%</span>
+        <span class="breakdown-label">Correctheid</span>
+      </div>
+      <div class="breakdown-item">
+        <span class="breakdown-num">${state.streak}</span>
+        <span class="breakdown-label">🔥 Streak</span>
+      </div>
+    </div>
+    <button class="replay-btn" id="replay-btn">Opnieuw proberen</button>
+    <button class="home-btn" id="home-btn">Terug naar start</button>
+  `;
+
+  document.getElementById('replay-btn').addEventListener('click', () => startQuiz(quizMode));
+  document.getElementById('home-btn').addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-screen="home"]').classList.add('active');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-home').classList.add('active');
+    refreshHome();
+  });
+}
+
+// ---- HOME ----
+document.querySelectorAll('.lesson-card').forEach(card => {
+  card.addEventListener('click', () => startQuiz(card.dataset.mode));
+});
+
+function refreshHome() {
+  document.getElementById('stat-total').textContent = state.totalDone;
+  const pct = state.totalDone > 0 ? Math.round(state.totalCorrect/state.totalDone*100)+'%' : '—';
+  document.getElementById('stat-pct').textContent = pct;
+  document.getElementById('stat-streak').textContent = state.streak;
+  document.getElementById('streak-num').textContent = state.streak;
+
+  const serDone = state.catDone.ser||0, serOk = state.catCorrect.ser||0;
+  const presDone = state.catDone.pres||0, presOk = state.catCorrect.pres||0;
+  const pretDone = state.catDone.pret||0, pretOk = state.catCorrect.pret||0;
+
+  document.getElementById('prog-ser').textContent = serDone ? `${serOk}/${serDone}` : '→';
+  document.getElementById('prog-pres').textContent = presDone ? `${presOk}/${presDone}` : '→';
+  document.getElementById('prog-pret').textContent = pretDone ? `${pretOk}/${pretDone}` : '→';
+  document.getElementById('prog-all').textContent = state.totalDone ? `${state.totalCorrect}/${state.totalDone}` : '→';
+}
+
+function refreshStats() {
+  const cats = ['ser','pres','pret'];
+  cats.forEach(cat => {
+    const d = state.catDone[cat]||0;
+    const c = state.catCorrect[cat]||0;
+    const pct = d>0 ? Math.round(c/d*100) : 0;
+    document.getElementById('pr-'+cat).style.width = pct+'%';
+    document.getElementById('pr-'+cat+'-val').textContent = d>0 ? pct+'%' : '—';
+  });
+}
+
+// ---- INSTALL BANNER ----
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+if (isIOS && !isStandalone) {
+  document.getElementById('install-banner').style.display = 'flex';
+}
+
+// ---- INIT ----
+refreshHome();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
