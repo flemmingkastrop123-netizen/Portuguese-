@@ -6,983 +6,724 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Falar PT">
-  <meta name="theme-color" content="#1a1a2e">
+  <meta name="theme-color" content="#0f0f1a">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>Falar PT — Portugees oefenen</title>
+  <title>Falar PT — 250 zinnen</title>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f0f1a;
-      --bg2: #171728;
-      --bg3: #1e1e35;
-      --accent: #e8c547;
-      --accent2: #ff6b6b;
-      --accent3: #4ecdc4;
-      --text: #f0f0f8;
-      --text2: #9999bb;
-      --text3: #5555775;
-      --border: rgba(255,255,255,0.08);
-      --green: #4ecdc4;
-      --red: #ff6b6b;
-      --card-r: 16px;
+      --bg:#0f0f1a; --bg2:#171728; --bg3:#1e1e35;
+      --accent:#e8c547; --green:#4ecdc4; --red:#ff6b6b; --purple:#a78bfa;
+      --text:#f0f0f8; --text2:#9999bb; --border:rgba(255,255,255,0.08);
+      --r:16px;
     }
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden}
+    #app{height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
-    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    /* HEADER */
+    .hdr{padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0}
+    .logo{font-family:'Instrument Serif',serif;font-size:21px;color:var(--accent)}
+    .logo span{color:var(--text2);font-style:italic;font-size:13px;margin-left:5px}
+    .streak{display:flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 11px;font-size:13px;font-weight:500;color:var(--accent)}
 
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      overflow: hidden;
-    }
+    /* NAV */
+    .nav{display:flex;padding:8px 14px;gap:6px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+    .nav::-webkit-scrollbar{display:none}
+    .ntab{flex-shrink:0;padding:6px 13px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .2s}
+    .ntab.active{background:var(--accent);color:#0f0f1a;border-color:var(--accent)}
 
-    /* ---- APP SHELL ---- */
-    #app {
-      height: 100vh;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+    /* SCROLL */
+    .scroll{flex:1;overflow-y:auto;padding:14px;-webkit-overflow-scrolling:touch}
+    .scroll::-webkit-scrollbar{display:none}
 
-    /* ---- HEADER ---- */
-    .app-header {
-      padding: 16px 20px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .app-logo {
-      font-family: 'Instrument Serif', serif;
-      font-size: 22px;
-      color: var(--accent);
-      letter-spacing: -0.5px;
-    }
-    .app-logo span { color: var(--text2); font-style: italic; font-size: 14px; margin-left: 6px; }
-    .streak-badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 5px 12px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--accent);
-    }
+    /* SCREENS */
+    .scr{display:none}.scr.active{display:block}
 
-    /* ---- NAV TABS ---- */
-    .nav-tabs {
-      display: flex;
-      padding: 10px 16px;
-      gap: 6px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      overflow-x: auto;
-      flex-shrink: 0;
-      scrollbar-width: none;
-    }
-    .nav-tabs::-webkit-scrollbar { display: none; }
-    .nav-tab {
-      flex-shrink: 0;
-      padding: 7px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 500;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text2);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .nav-tab.active {
-      background: var(--accent);
-      color: #0f0f1a;
-      border-color: var(--accent);
-    }
+    /* HOME */
+    .hero{background:linear-gradient(135deg,#1e1e35,#16162a);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:14px;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;background:radial-gradient(circle,rgba(232,197,71,.15),transparent 70%);border-radius:50%}
+    .hero h2{font-family:'Instrument Serif',serif;font-size:24px;color:var(--text);margin-bottom:5px;line-height:1.25}
+    .hero h2 em{color:var(--accent);font-style:italic}
+    .hero p{font-size:13px;color:var(--text2);line-height:1.5}
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+    .scard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center}
+    .snum{font-size:22px;font-weight:600;color:var(--accent);display:block}
+    .slbl{font-size:11px;color:var(--text2);margin-top:1px;display:block}
+    .sec-ttl{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text2);margin-bottom:8px;margin-top:18px}
+    .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+    .cat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+    .cat-card:active{transform:scale(.97);background:var(--bg3)}
+    .cat-card .cc-icon{font-size:24px;margin-bottom:8px;display:block}
+    .cat-card .cc-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px}
+    .cat-card .cc-sub{font-size:11px;color:var(--text2)}
+    .cat-card .cc-count{position:absolute;top:10px;right:10px;font-size:11px;font-weight:600;color:var(--accent);background:rgba(232,197,71,.12);padding:2px 8px;border-radius:20px}
+    .cat-card.full-width{grid-column:1/-1;display:flex;align-items:center;gap:14px}
+    .cat-card.full-width .cc-icon{margin-bottom:0;font-size:28px}
+    .install-tip{background:rgba(232,197,71,.08);border:1px solid rgba(232,197,71,.2);border-radius:var(--r);padding:12px 14px;display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}
+    .install-tip p{font-size:12px;color:var(--text2);line-height:1.5}
+    .install-tip strong{color:var(--accent)}
 
-    /* ---- SCROLL AREA ---- */
-    .scroll-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      -webkit-overflow-scrolling: touch;
-    }
-    .scroll-area::-webkit-scrollbar { display: none; }
+    /* QUIZ */
+    .qhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .qback{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:13px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif}
+    .qctr{font-size:12px;color:var(--text2);font-weight:500}
+    .qscore{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:4px 11px;font-size:13px;font-weight:600;color:var(--accent)}
+    .prog-track{height:3px;background:var(--bg3);border-radius:2px;margin-bottom:18px;overflow:hidden}
+    .prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:2px;transition:width .4s ease}
+    .qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px;animation:slideUp .3s ease}
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .qcat{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+    .qcat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+    .qpt{font-family:'Instrument Serif',serif;font-size:20px;line-height:1.45;color:var(--text);margin-bottom:5px}
+    .qnl{font-size:13px;color:var(--text2);font-style:italic;margin-bottom:10px;line-height:1.4}
+    .qtag{display:inline-block;background:rgba(232,197,71,.1);color:var(--accent);font-size:11px;font-weight:500;padding:2px 8px;border-radius:6px}
 
-    /* ---- SCREENS ---- */
-    .screen { display: none; }
-    .screen.active { display: block; }
+    /* MC */
+    .mc-list{display:flex;flex-direction:column;gap:7px}
+    .mc-opt{background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;font-size:14px;font-weight:500;color:var(--text);cursor:pointer;text-align:left;width:100%;transition:all .15s;font-family:'DM Sans',sans-serif}
+    .mc-opt:active{transform:scale(.98)}
+    .mc-opt.ok{background:rgba(78,205,196,.15);border-color:var(--green);color:var(--green)}
+    .mc-opt.nope{background:rgba(255,107,107,.1);border-color:var(--red);color:var(--red)}
+    .mc-opt.dim{opacity:.35;pointer-events:none}
 
-    /* ---- HOME SCREEN ---- */
-    .home-hero {
-      background: linear-gradient(135deg, #1e1e35 0%, #16162a 100%);
-      border: 1px solid var(--border);
-      border-radius: var(--card-r);
-      padding: 24px;
-      margin-bottom: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-    .home-hero::before {
-      content: '';
-      position: absolute;
-      top: -40px; right: -40px;
-      width: 140px; height: 140px;
-      background: radial-gradient(circle, rgba(232,197,71,0.15) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-    .home-hero h2 {
-      font-family: 'Instrument Serif', serif;
-      font-size: 26px;
-      color: var(--text);
-      margin-bottom: 6px;
-      line-height: 1.2;
-    }
-    .home-hero h2 em { color: var(--accent); font-style: italic; }
-    .home-hero p { font-size: 14px; color: var(--text2); line-height: 1.5; }
+    /* INPUT */
+    .inp-wrap{position:relative}
+    .qinp{width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;padding:13px 52px 13px 15px;font-size:16px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;-webkit-appearance:none;transition:border-color .2s}
+    .qinp:focus{border-color:var(--accent)}
+    .qinp.ok{border-color:var(--green);background:rgba(78,205,196,.07)}
+    .qinp.nope{border-color:var(--red);background:rgba(255,107,107,.05)}
+    .qgo{position:absolute;right:7px;top:50%;transform:translateY(-50%);background:var(--accent);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .15s;font-family:'DM Sans',sans-serif}
+    .qgo:active{transform:translateY(-50%) scale(.9)}
+    .qgo:disabled{background:var(--bg3);opacity:.4;cursor:default}
 
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .stat-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--card-r);
-      padding: 14px;
-      text-align: center;
-    }
-    .stat-num { font-size: 24px; font-weight: 600; color: var(--accent); display: block; }
-    .stat-label { font-size: 11px; color: var(--text2); margin-top: 2px; display: block; }
+    /* FLASHCARD */
+    .flash-scene{perspective:1000px;margin-bottom:14px;cursor:pointer}
+    .flash-card{width:100%;min-height:180px;position:relative;transform-style:preserve-3d;transition:transform .5s ease}
+    .flash-card.flipped{transform:rotateY(180deg)}
+    .flash-face{position:absolute;width:100%;min-height:180px;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+    .flash-back{transform:rotateY(180deg);background:var(--bg3)}
+    .flash-pt{font-family:'Instrument Serif',serif;font-size:22px;color:var(--text);line-height:1.4;margin-bottom:8px}
+    .flash-nl{font-size:16px;color:var(--text2);line-height:1.4}
+    .flash-hint{font-size:12px;color:var(--text2);margin-top:12px;opacity:.6}
+    .flash-nav{display:flex;gap:10px;margin-bottom:14px}
+    .flash-btn{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);font-family:'DM Sans',sans-serif;transition:all .15s}
+    .flash-btn:active{background:var(--bg3)}
+    .flash-btn.knew{color:var(--green);border-color:rgba(78,205,196,.3)}
+    .flash-btn.didnt{color:var(--red);border-color:rgba(255,107,107,.3)}
+    .flash-ctr{text-align:center;font-size:12px;color:var(--text2);margin-bottom:14px}
 
-    .section-title {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text2);
-      margin-bottom: 10px;
-      margin-top: 20px;
-    }
+    /* FEEDBACK */
+    .fb{border-radius:12px;padding:11px 13px;font-size:13px;line-height:1.5;margin-bottom:11px;display:none}
+    .fb.ok{background:rgba(78,205,196,.1);color:var(--green);border:1px solid rgba(78,205,196,.2)}
+    .fb.nope{background:rgba(255,107,107,.08);color:#ff9999;border:1px solid rgba(255,107,107,.15)}
+    .nxt{width:100%;background:var(--accent);color:#0f0f1a;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;display:none;transition:all .15s}
+    .nxt:active{transform:scale(.98)}
 
-    .lesson-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--card-r);
-      padding: 16px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .lesson-card:active { transform: scale(0.98); background: var(--bg3); }
-    .lesson-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-    .lesson-icon.green { background: rgba(78,205,196,0.15); }
-    .lesson-icon.yellow { background: rgba(232,197,71,0.15); }
-    .lesson-icon.red { background: rgba(255,107,107,0.15); }
-    .lesson-info { flex: 1; }
-    .lesson-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
-    .lesson-sub { font-size: 12px; color: var(--text2); }
-    .lesson-progress {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--accent);
-    }
+    /* RESULT */
+    .res-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:26px 22px;text-align:center;margin-bottom:12px;animation:pop .4s ease;position:relative;overflow:hidden}
+    .res-card::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:180px;height:180px;background:radial-gradient(circle,rgba(232,197,71,.1),transparent 70%);border-radius:50%}
+    @keyframes pop{0%{opacity:0;transform:scale(.95)}60%{transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
+    .res-em{font-size:44px;display:block;margin-bottom:10px}
+    .res-sc{font-family:'Instrument Serif',serif;font-size:50px;color:var(--accent);display:block;line-height:1}
+    .res-lbl{font-size:17px;font-weight:500;color:var(--text);margin:6px 0 6px}
+    .res-sub{font-size:13px;color:var(--text2);line-height:1.5}
+    .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+    .res-item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px}
+    .res-item span:first-child{font-size:19px;font-weight:600;color:var(--text);display:block}
+    .res-item span:last-child{font-size:11px;color:var(--text2);display:block;margin-top:1px}
+    .rbtn{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;font-weight:500;color:var(--text);cursor:pointer;margin-bottom:7px;font-family:'DM Sans',sans-serif}
+    .rbtn:active{background:var(--bg2)}
+    .rbtn.primary{background:var(--accent);color:#0f0f1a;border-color:var(--accent)}
+    .rbtn.primary:active{opacity:.9}
 
-    /* ---- QUIZ SCREEN ---- */
-    .quiz-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .quiz-back {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 8px 12px;
-      font-size: 13px;
-      color: var(--text2);
-      cursor: pointer;
-    }
-    .quiz-counter {
-      font-size: 13px;
-      color: var(--text2);
-      font-weight: 500;
-    }
-    .quiz-score-pill {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 5px 12px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--accent);
-    }
-
-    .progress-track {
-      height: 3px;
-      background: var(--bg3);
-      border-radius: 2px;
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-    .progress-thumb {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--accent3));
-      border-radius: 2px;
-      transition: width 0.4s ease;
-    }
-
-    .question-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--card-r);
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    .q-cat {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .q-cat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .q-text {
-      font-family: 'Instrument Serif', serif;
-      font-size: 21px;
-      line-height: 1.4;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-    .q-blank {
-      display: inline-block;
-      border-bottom: 2px solid var(--accent);
-      min-width: 70px;
-      color: transparent;
-      padding: 0 4px;
-    }
-    .q-hint {
-      font-size: 13px;
-      color: var(--text2);
-      font-style: italic;
-    }
-    .q-verb-hint {
-      display: inline-block;
-      background: rgba(232,197,71,0.12);
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 500;
-      padding: 2px 8px;
-      border-radius: 6px;
-      margin-top: 8px;
-    }
-
-    .answer-area { margin-bottom: 12px; }
-
-    /* Multiple choice */
-    .mc-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .mc-opt {
-      background: var(--bg3);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text);
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.15s;
-      width: 100%;
-    }
-    .mc-opt:active { transform: scale(0.98); }
-    .mc-opt.correct { background: rgba(78,205,196,0.15); border-color: var(--green); color: var(--green); }
-    .mc-opt.wrong { background: rgba(255,107,107,0.12); border-color: var(--red); color: var(--red); }
-    .mc-opt.dimmed { opacity: 0.4; pointer-events: none; }
-
-    /* Text input */
-    .inp-wrap { position: relative; }
-    .oef-inp {
-      width: 100%;
-      background: var(--bg3);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 56px 14px 16px;
-      font-size: 16px;
-      font-family: 'DM Sans', sans-serif;
-      color: var(--text);
-      outline: none;
-      -webkit-appearance: none;
-      transition: border-color 0.2s;
-    }
-    .oef-inp:focus { border-color: var(--accent); }
-    .oef-inp.correct { border-color: var(--green); background: rgba(78,205,196,0.08); }
-    .oef-inp.wrong { border-color: var(--red); background: rgba(255,107,107,0.06); }
-    .inp-submit {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: var(--accent);
-      border: none;
-      border-radius: 8px;
-      width: 38px;
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 16px;
-      transition: all 0.15s;
-    }
-    .inp-submit:active { transform: translateY(-50%) scale(0.92); }
-    .inp-submit:disabled { background: var(--bg3); opacity: 0.4; cursor: default; }
-
-    /* Feedback */
-    .feedback-box {
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 12px;
-      display: none;
-    }
-    .feedback-box.ok { background: rgba(78,205,196,0.12); color: var(--green); border: 1px solid rgba(78,205,196,0.25); }
-    .feedback-box.nope { background: rgba(255,107,107,0.10); color: #ff9999; border: 1px solid rgba(255,107,107,0.2); }
-
-    .next-btn {
-      width: 100%;
-      background: var(--accent);
-      color: #0f0f1a;
-      border: none;
-      border-radius: 12px;
-      padding: 15px;
-      font-size: 15px;
-      font-weight: 600;
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-      display: none;
-      transition: all 0.15s;
-    }
-    .next-btn:active { transform: scale(0.98); }
-
-    /* ---- RESULTS ---- */
-    .result-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--card-r);
-      padding: 28px 24px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 14px;
-    }
-    .result-card::before {
-      content: '';
-      position: absolute;
-      top: -60px; left: 50%;
-      transform: translateX(-50%);
-      width: 200px; height: 200px;
-      background: radial-gradient(circle, rgba(232,197,71,0.12) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-    .result-emoji { font-size: 48px; margin-bottom: 12px; display: block; }
-    .result-score {
-      font-family: 'Instrument Serif', serif;
-      font-size: 52px;
-      color: var(--accent);
-      display: block;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .result-label { font-size: 18px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
-    .result-sub { font-size: 14px; color: var(--text2); line-height: 1.5; }
-    .result-breakdown {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .breakdown-item {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-    }
-    .breakdown-num { font-size: 20px; font-weight: 600; color: var(--text); display: block; }
-    .breakdown-label { font-size: 11px; color: var(--text2); display: block; margin-top: 2px; }
-    .replay-btn {
-      width: 100%;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text);
-      cursor: pointer;
-      margin-bottom: 8px;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .replay-btn:active { background: var(--bg2); }
-    .home-btn {
-      width: 100%;
-      background: var(--accent);
-      border: none;
-      border-radius: 12px;
-      padding: 14px;
-      font-size: 15px;
-      font-weight: 600;
-      color: #0f0f1a;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .home-btn:active { transform: scale(0.98); }
-
-    /* ---- STATS SCREEN ---- */
-    .progress-section { margin-bottom: 20px; }
-    .progress-row {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--card-r);
-      padding: 14px 16px;
-      margin-bottom: 8px;
-    }
-    .pr-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .pr-name { font-size: 14px; font-weight: 500; color: var(--text); }
-    .pr-val { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .pr-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
-    .pr-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent3)); transition: width 0.6s ease; }
-    .tips-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--card-r);
-      padding: 16px;
-      margin-bottom: 10px;
-    }
-    .tip-item {
-      display: flex;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-      color: var(--text2);
-      line-height: 1.5;
-    }
-    .tip-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .tip-item span:first-child { font-size: 18px; flex-shrink: 0; }
-
-    /* ---- ANIMATIONS ---- */
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pop {
-      0% { transform: scale(0.95); opacity: 0; }
-      60% { transform: scale(1.02); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .question-card { animation: slideUp 0.3s ease; }
-    .result-card { animation: pop 0.4s ease; }
-
-    /* ---- EMPTY STATES ---- */
-    .install-tip {
-      background: rgba(232,197,71,0.08);
-      border: 1px solid rgba(232,197,71,0.2);
-      border-radius: var(--card-r);
-      padding: 14px 16px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      margin-bottom: 16px;
-    }
-    .install-tip .icon { font-size: 20px; flex-shrink: 0; }
-    .install-tip p { font-size: 13px; color: var(--text2); line-height: 1.5; }
-    .install-tip strong { color: var(--accent); }
+    /* STATS SCREEN */
+    .prow{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:8px}
+    .prow-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+    .prow-name{font-size:14px;font-weight:500;color:var(--text)}
+    .prow-val{font-size:13px;font-weight:600;color:var(--accent)}
+    .pbar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+    .pfill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .6s ease}
+    .tip-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px}
+    .tip-row{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);line-height:1.5}
+    .tip-row:last-child{border-bottom:none;padding-bottom:0}
+    .tip-row span:first-child{font-size:17px;flex-shrink:0}
   </style>
 </head>
 <body>
 <div id="app">
-  <header class="app-header">
-    <div class="app-logo">falar.pt <span>oefeningen</span></div>
-    <div class="streak-badge">🔥 <span id="streak-num">0</span> daags</div>
+  <header class="hdr">
+    <div class="logo">falar.pt <span>250 zinnen</span></div>
+    <div class="streak">🔥 <span id="streak-num">0</span></div>
   </header>
-
-  <nav class="nav-tabs">
-    <button class="nav-tab active" data-screen="home">Startpagina</button>
-    <button class="nav-tab" data-screen="quiz">Oefenen</button>
-    <button class="nav-tab" data-screen="stats">Voortgang</button>
+  <nav class="nav">
+    <button class="ntab active" data-s="home">Start</button>
+    <button class="ntab" data-s="quiz">Quiz</button>
+    <button class="ntab" data-s="flash">Flashcards</button>
+    <button class="ntab" data-s="stats">Voortgang</button>
   </nav>
-
-  <div class="scroll-area">
-
-    <!-- HOME SCREEN -->
-    <div class="screen active" id="screen-home">
-      <div class="home-hero">
+  <div class="scroll">
+    <!-- HOME -->
+    <div class="scr active" id="scr-home">
+      <div class="hero">
         <h2>Bom dia!<br>Laten we <em>oefenen.</em></h2>
-        <p>Jij zit op A2–B1. Elke oefening brengt je dichter bij vloeiend spreken.</p>
+        <p>250 echte Portugese zinnen en uitdrukkingen — van café tot dokter.</p>
       </div>
-
-      <div id="install-banner" class="install-tip" style="display:none">
-        <span class="icon">📲</span>
-        <p><strong>Tip:</strong> Voeg toe aan beginscherm via Delen → "Zet op beginscherm" voor gebruik als app.</p>
+      <div id="install-banner" style="display:none" class="install-tip">
+        <span style="font-size:18px;flex-shrink:0">📲</span>
+        <p><strong>Tip:</strong> Safari → Delen → "Zet op beginscherm" om als app te gebruiken.</p>
       </div>
-
       <div class="stats-row">
-        <div class="stat-card">
-          <span class="stat-num" id="stat-total">0</span>
-          <span class="stat-label">gedaan</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-num" id="stat-pct">—</span>
-          <span class="stat-label">correct</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-num" id="stat-streak">0</span>
-          <span class="stat-label">🔥 streak</span>
-        </div>
+        <div class="scard"><span class="snum" id="h-done">0</span><span class="slbl">gedaan</span></div>
+        <div class="scard"><span class="snum" id="h-pct">—</span><span class="slbl">correct</span></div>
+        <div class="scard"><span class="snum" id="h-streak">0</span><span class="slbl">🔥 streak</span></div>
       </div>
-
-      <div class="section-title">Kies een categorie</div>
-
-      <div class="lesson-card" data-mode="all">
-        <div class="lesson-icon yellow">🎯</div>
-        <div class="lesson-info">
-          <div class="lesson-title">Alles door elkaar</div>
-          <div class="lesson-sub">Ser/estar · verleden · tegenwoordig</div>
-        </div>
-        <div class="lesson-progress" id="prog-all">→</div>
-      </div>
-
-      <div class="lesson-card" data-mode="ser">
-        <div class="lesson-icon green">⚖️</div>
-        <div class="lesson-info">
-          <div class="lesson-title">Ser vs. estar</div>
-          <div class="lesson-sub">Permanent vs. tijdelijk</div>
-        </div>
-        <div class="lesson-progress" id="prog-ser">→</div>
-      </div>
-
-      <div class="lesson-card" data-mode="pres">
-        <div class="lesson-icon green">🟢</div>
-        <div class="lesson-info">
-          <div class="lesson-title">Tegenwoordige tijd</div>
-          <div class="lesson-sub">-ar, -er, -ir + onregelmatig</div>
-        </div>
-        <div class="lesson-progress" id="prog-pres">→</div>
-      </div>
-
-      <div class="lesson-card" data-mode="pret">
-        <div class="lesson-icon red">⏪</div>
-        <div class="lesson-info">
-          <div class="lesson-title">Verleden tijd</div>
-          <div class="lesson-sub">Pretérito perfeito</div>
-        </div>
-        <div class="lesson-progress" id="prog-pret">→</div>
-      </div>
-
-      <div class="lesson-card" data-mode="hard">
-        <div class="lesson-icon red">🔥</div>
-        <div class="lesson-info">
-          <div class="lesson-title">Uitdaging</div>
-          <div class="lesson-sub">Alleen moeilijke vragen</div>
-        </div>
-        <div class="lesson-progress">→</div>
+      <div class="sec-ttl">Categorieën — quiz</div>
+      <div class="cat-grid">
+        <div class="cat-card" data-mode="all"><span class="cc-count">250</span><span class="cc-icon">🎯</span><div class="cc-name">Alles</div><div class="cc-sub">Door elkaar</div></div>
+        <div class="cat-card" data-mode="greetings"><span class="cc-count" id="cnt-greetings">—</span><span class="cc-icon">👋</span><div class="cc-name">Begroetingen</div><div class="cc-sub">Hallo, dank je, sorry</div></div>
+        <div class="cat-card" data-mode="cafe"><span class="cc-count" id="cnt-cafe">—</span><span class="cc-icon">☕</span><div class="cc-name">Café & restaurant</div><div class="cc-sub">Bestellen, rekening</div></div>
+        <div class="cat-card" data-mode="shopping"><span class="cc-count" id="cnt-shopping">—</span><span class="cc-icon">🛒</span><div class="cc-name">Winkelen</div><div class="cc-sub">Markt, supermarkt</div></div>
+        <div class="cat-card" data-mode="directions"><span class="cc-count" id="cnt-directions">—</span><span class="cc-icon">🗺️</span><div class="cc-name">Weg vragen</div><div class="cc-sub">Links, rechts, ver</div></div>
+        <div class="cat-card" data-mode="transport"><span class="cc-count" id="cnt-transport">—</span><span class="cc-icon">🚌</span><div class="cc-name">Transport</div><div class="cc-sub">Bus, metro, taxi</div></div>
+        <div class="cat-card" data-mode="health"><span class="cc-count" id="cnt-health">—</span><span class="cc-icon">🏥</span><div class="cc-name">Gezondheid</div><div class="cc-sub">Dokter, apotheek</div></div>
+        <div class="cat-card" data-mode="social"><span class="cc-count" id="cnt-social">—</span><span class="cc-icon">💬</span><div class="cc-name">Smalltalk</div><div class="cc-sub">Kennismaken, praten</div></div>
+        <div class="cat-card" data-mode="home_life"><span class="cc-count" id="cnt-home_life">—</span><span class="cc-icon">🏠</span><div class="cc-name">Thuis & wonen</div><div class="cc-sub">Huren, buren</div></div>
+        <div class="cat-card" data-mode="emergencies"><span class="cc-count" id="cnt-emergencies">—</span><span class="cc-icon">🚨</span><div class="cc-name">Noodgevallen</div><div class="cc-sub">Hulp, politie</div></div>
+        <div class="cat-card full-width" data-mode="hard"><span class="cc-icon">🔥</span><div><div class="cc-name">Uitdaging — moeilijk</div><div class="cc-sub">Alleen niveau 3 vragen</div></div></div>
       </div>
     </div>
 
-    <!-- QUIZ SCREEN -->
-    <div class="screen" id="screen-quiz">
-      <div id="quiz-container"></div>
+    <!-- QUIZ -->
+    <div class="scr" id="scr-quiz"><div id="quiz-wrap"></div></div>
+
+    <!-- FLASHCARDS -->
+    <div class="scr" id="scr-flash">
+      <div class="sec-ttl">Kies categorie</div>
+      <div id="flash-cat-select">
+        <div class="cat-grid" id="flash-cats"></div>
+      </div>
+      <div id="flash-wrap" style="display:none"></div>
     </div>
 
-    <!-- STATS SCREEN -->
-    <div class="screen" id="screen-stats">
-      <div class="section-title">Jouw voortgang</div>
-      <div class="progress-section">
-        <div class="progress-row">
-          <div class="pr-top"><span class="pr-name">Ser / estar</span><span class="pr-val" id="pr-ser-val">0%</span></div>
-          <div class="pr-bar"><div class="pr-fill" id="pr-ser" style="width:0%"></div></div>
-        </div>
-        <div class="progress-row">
-          <div class="pr-top"><span class="pr-name">Tegenwoordige tijd</span><span class="pr-val" id="pr-pres-val">0%</span></div>
-          <div class="pr-bar"><div class="pr-fill" id="pr-pres" style="width:0%"></div></div>
-        </div>
-        <div class="progress-row">
-          <div class="pr-top"><span class="pr-name">Verleden tijd</span><span class="pr-val" id="pr-pret-val">0%</span></div>
-          <div class="pr-bar"><div class="pr-fill" id="pr-pret" style="width:0%"></div></div>
-        </div>
-      </div>
-
-      <div class="section-title">Snelle tips</div>
-      <div class="tips-card">
-        <div class="tip-item"><span>⚖️</span><span><strong style="color:var(--text)">Ser vs estar:</strong> Tijdelijk gevoel, locatie, bezig zijn → estar. Al de rest → ser.</span></div>
-        <div class="tip-item"><span>🔤</span><span><strong style="color:var(--text)">-ar uitgang:</strong> -ei, -aste, -ou, -ámos, -aram in de verleden tijd.</span></div>
-        <div class="tip-item"><span>⚡</span><span><strong style="color:var(--text)">Onregelmatig:</strong> ser/ir = fui · ter = tive · fazer = fiz · vir = vim</span></div>
-        <div class="tip-item"><span>🗣️</span><span><strong style="color:var(--text)">Tip:</strong> Voeg "ontem" (gisteren) of "hoje" (vandaag) toe om je tijd duidelijk te maken.</span></div>
-        <div class="tip-item"><span>🇵🇹</span><span><strong style="color:var(--text)">In Portugal:</strong> "tás bem?" = "estás bem?" — de 'es-' wordt ingeslikt in gesproken taal.</span></div>
+    <!-- STATS -->
+    <div class="scr" id="scr-stats">
+      <div class="sec-ttl">Voortgang per categorie</div>
+      <div id="stats-rows"></div>
+      <div class="sec-ttl" style="margin-top:20px">Snelle tips</div>
+      <div class="tip-card">
+        <div class="tip-row"><span>🇵🇹</span><span><strong style="color:var(--text)">"Tás bem?"</strong> = "Estás bem?" — de 'es-' wordt ingeslikt in gesproken Portugees.</span></div>
+        <div class="tip-row"><span>☕</span><span><strong style="color:var(--text)">"Queria"</strong> (wilde) klinkt beleefder dan "quero" (wil) bij bestellen.</span></div>
+        <div class="tip-row"><span>🙏</span><span><strong style="color:var(--text)">"Se faz favor"</strong> = alstublieft (bij vragen). "Por favor" ook, maar minder formeel.</span></div>
+        <div class="tip-row"><span>⚖️</span><span><strong style="color:var(--text)">Ser vs estar:</strong> tijdelijk/locatie → estar. Identiteit/beroep → ser.</span></div>
+        <div class="tip-row"><span>🔤</span><span><strong style="color:var(--text)">Verleden tijd -ar:</strong> -ei, -aste, -ou, -ámos, -aram.</span></div>
+        <div class="tip-row"><span>⚡</span><span><strong style="color:var(--text)">Onregelmatig:</strong> ser/ir=fui · ter=tive · fazer=fiz · vir=vim · ver=vi</span></div>
+        <div class="tip-row"><span>🗺️</span><span><strong style="color:var(--text)">Weg vragen:</strong> Vire à esquerda (links) · à direita (rechts) · em frente (rechtdoor)</span></div>
       </div>
     </div>
-
   </div>
 </div>
 
 <script>
-// ---- ALL QUESTIONS ----
-const QUESTIONS = [
-  // SER / ESTAR
-  {cat:'ser',diff:1,type:'mc',zin:'A Maria ___ enfermeira.',tr:'Maria is verpleegster.',opts:['é','está','são'],ans:0,fb:'Beroep = altijd ser. → é enfermeira.'},
-  {cat:'ser',diff:1,type:'mc',zin:'Eu ___ muito cansado hoje.',tr:'Ik ben vandaag erg moe.',opts:['sou','estou','são'],ans:1,fb:'Tijdelijke toestand = estar. → estou cansado.'},
-  {cat:'ser',diff:1,type:'mc',zin:'O café ___ fechado agora.',tr:'Het café is nu gesloten.',opts:['é','está','foi'],ans:1,fb:'Tijdelijke toestand = estar. → está fechado.'},
-  {cat:'ser',diff:1,type:'mc',zin:'Eles ___ portugueses.',tr:'Zij zijn Portugees.',opts:['são','estão','ser'],ans:0,fb:'Nationaliteit = ser. → são portugueses.'},
-  {cat:'ser',diff:2,type:'mc',zin:'A sopa ___ quente.',tr:'De soep is (nu) warm.',opts:['é','está','foi'],ans:1,fb:'Tijdelijke toestand = estar. De soep is nu warm maar koelt af.'},
-  {cat:'ser',diff:2,type:'mc',zin:'O fogo ___ quente.',tr:'Vuur is heet (van nature).',opts:['é','está','ser'],ans:0,fb:'Inherente eigenschap = ser. Vuur is altijd heet.'},
-  {cat:'ser',diff:2,type:'mc',zin:'Onde ___ o banco?',tr:'Waar is de bank?',opts:['é','está','foi'],ans:1,fb:'Locatie = estar. → Onde está o banco?'},
-  {cat:'ser',diff:2,type:'mc',zin:'___ duas horas da tarde.',tr:'Het is twee uur \'s middags.',opts:['São','Estão','É'],ans:0,fb:'Tijdsaanduiding = ser. → São duas horas.'},
-  {cat:'ser',diff:3,type:'mc',zin:'Ela ___ muito diferente hoje.',tr:'Ze is vandaag heel anders.',opts:['é','está','foi'],ans:1,fb:'Estar voor een tijdelijke verandering in gedrag/uiterlijk.'},
-  {cat:'ser',diff:3,type:'mc',zin:'Este bolo ___ delicioso!',tr:'Deze taart is heerlijk!',opts:['é','está','foi'],ans:1,fb:'Smaak na proeven = estar. "Está delicioso" = het smaakt nu heerlijk.'},
-  {cat:'ser',diff:2,type:'mc',zin:'Hoje ___ segunda-feira.',tr:'Vandaag is het maandag.',opts:['é','está','são'],ans:0,fb:'Dag van de week = ser. → Hoje é segunda-feira.'},
-  {cat:'ser',diff:1,type:'mc',zin:'Ele ___ médico.',tr:'Hij is dokter.',opts:['é','está','ser'],ans:0,fb:'Beroep = ser. → é médico.'},
+// =============================================
+// 250 ZINNEN & UITDRUKKINGEN
+// type: 'mc' = meerkeuze, 'fc' = flashcard-only
+// cat: categorie
+// diff: 1=makkelijk, 2=middel, 3=moeilijk
+// =============================================
+const DB = [
+  // ---- BEGROETINGEN & BELEEFDHEDEN (30) ----
+  {cat:'greetings',diff:1,type:'mc',pt:'Bom dia!',nl:'Goedemorgen!',opts:['Goedemorgen!','Goedemiddag!','Goedenavond!','Tot ziens!'],ans:0,fb:'Bom dia = goedemorgen · Boa tarde = goedemiddag · Boa noite = goedenavond'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Boa tarde!',nl:'Goedemiddag!',opts:['Goedemorgen!','Goedemiddag!','Goedenavond!','Hallo!'],ans:1,fb:'Boa tarde gebruik je van \'s middags tot zonsondergang.'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Boa noite!',nl:'Goedenavond!',opts:['Goedemorgen!','Goedemiddag!','Goedenavond / welterusten!','Dag!'],ans:2,fb:'Boa noite is zowel goedenavond als welterusten.'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Olá!',nl:'Hallo!',opts:['Tot ziens!','Hallo!','Sorry!','Dank je!'],ans:1,fb:'Olá is het meest neutrale begroetingswoord.'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Tudo bem?',nl:'Alles goed?',opts:['Hoe heet je?','Alles goed?','Hoe oud ben je?','Waar ben je?'],ans:1,fb:'Tudo bem? = alles goed? Antwoord: "Tudo bem, obrigado/a!"'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Obrigado / Obrigada',nl:'Dank je wel',opts:['Sorry','Alsjeblieft','Dank je wel','Tot ziens'],ans:2,fb:'Obrigado (man) / Obrigada (vrouw) — jij past het aan op jezelf, niet op de ontvanger.'},
+  {cat:'greetings',diff:1,type:'mc',pt:'De nada.',nl:'Graag gedaan.',opts:['Het spijt me.','Graag gedaan.','Geen probleem.','Tot ziens.'],ans:1,fb:'"De nada" = graag gedaan / geen dank. Ook: "Não tem de quê."'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Com licença.',nl:'Pardon / Excuseer mij.',opts:['Sorry, mijn fout.','Pardon / Excuseer mij.','Tot ziens.','Ik begrijp het niet.'],ans:1,fb:'"Com licença" gebruik je om aandacht te vragen of langs iemand te gaan.'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Desculpe.',nl:'Sorry / Neemt u mij niet kwalijk.',opts:['Dank u wel.','Goed zo!','Sorry / Neemt u mij niet kwalijk.','Geen probleem.'],ans:2,fb:'"Desculpe" is formeler. Informeel: "Desculpa."'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Não faz mal.',nl:'Geeft niet / geen probleem.',opts:['Dat is slecht.','Geeft niet / geen probleem.','Ik weet het niet.','Goed idee.'],ans:1,fb:'"Não faz mal" is de standaardreactie op een verontschuldiging.'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Até logo!',nl:'Tot straks!',opts:['Tot morgen!','Tot ziens!','Tot straks!','Dag dag!'],ans:2,fb:'"Até logo" = tot straks · "Até amanhã" = tot morgen · "Adeus" = vaarwel'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Até amanhã!',nl:'Tot morgen!',opts:['Tot straks!','Tot morgen!','Goedenacht!','Tot ziens!'],ans:1,fb:'"Até amanhã" = tot morgen.'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Como se chama?',nl:'Hoe heet u? (formeel)',opts:['Hoe oud bent u?','Waar woont u?','Hoe heet u?','Wat doet u?'],ans:2,fb:'Formeel: "Como se chama?" · Informeel: "Como te chamas?"'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Muito prazer!',nl:'Aangenaam kennis te maken!',opts:['Veel plezier!','Aangenaam kennis te maken!','Goed gedaan!','Wat leuk!'],ans:1,fb:'"Muito prazer!" zeg je bij een eerste kennismaking.'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Igualmente!',nl:'Insgelijks!',opts:['Precies!','Insgelijks!','Dank u!','Klopt!'],ans:1,fb:'"Igualmente!" gebruik je als reactie op "Muito prazer!"'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Por favor.',nl:'Alsjeblieft / graag.',opts:['Sorry.','Dank je.','Alsjeblieft / graag.','Niet nodig.'],ans:2,fb:'"Por favor" en "se faz favor" betekenen allebei alstublieft.'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Faz favor!',nl:'Excuseer mij! (om aandacht te vragen)',opts:['Doe het zelf!','Alstublieft!','Excuseer mij!','Stop daarmee!'],ans:2,fb:'"Faz favor" of "se faz favor" gebruik je om een ober of winkelier te roepen.'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Com muito gosto!',nl:'Met veel plezier!',opts:['Heel erg!','Met veel plezier!','Geen idee!','Natuurlijk niet!'],ans:1,fb:'"Com muito gosto!" is een enthousiaste instemming — vergelijkbaar met "graag!"'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Sim / Não',nl:'Ja / Nee',opts:['Misschien / Zeker','Ja / Nee','Veel / Weinig','Snel / Langzaam'],ans:1,fb:'Sim = ja · Não = nee. Eenvoudig maar essentieel!'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Claro!',nl:'Natuurlijk! / Uiteraard!',opts:['Nooit!','Misschien.','Natuurlijk!','Zeker niet.'],ans:2,fb:'"Claro!" en "Com certeza!" zijn allebei "natuurlijk/zeker".'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Que pena!',nl:'Wat jammer!',opts:['Wat leuk!','Wat jammer!','Wat mooi!','Wat erg!'],ans:1,fb:'"Que pena!" = wat jammer! · "Que bom!" = wat fijn!'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Parabéns!',nl:'Gefeliciteerd!',opts:['Goed gedaan!','Wat leuk!','Gefeliciteerd!','Veel geluk!'],ans:2,fb:'"Parabéns!" gebruik je voor verjaardagen én andere prestaties.'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Boa sorte!',nl:'Veel succes!',opts:['Veel plezier!','Veel succes!','Goed gereed!','Tot later!'],ans:1,fb:'"Boa sorte!" = veel succes/geluk! · "Boa viagem!" = goede reis!'},
+  {cat:'greetings',diff:3,type:'mc',pt:'Fica à vontade!',nl:'Maak het je gemakkelijk! / Voel je thuis!',opts:['Ga zitten!','Maak het je gemakkelijk!','Ga weg!','Blijf staan!'],ans:1,fb:'"Fica à vontade!" hoor je als je bij iemand thuis bent of in een winkel.'},
+  {cat:'greetings',diff:3,type:'mc',pt:'Que saudades!',nl:'Wat heb ik je/jullie gemist!',opts:['Wat ben ik moe!','Wat heb ik je gemist!','Wat een verrassing!','Wat erg!'],ans:1,fb:'"Saudades" is het unieke Portugese gevoel van weemoed/verlangen.'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Esteja à vontade.',nl:'Ga uw gang. / Voel u vrij.',opts:['Wacht even.','Ga uw gang.','Kom hier.','Ga weg.'],ans:1,fb:'Formele versie van "fica à vontade" — gebruikt in winkels en hotels.'},
+  {cat:'greetings',diff:3,type:'mc',pt:'Manda ver!',nl:'Ga ervoor! / Doe het gewoon!',opts:['Kijk eens!','Ga ervoor!','Pas op!','Goed zo!'],ans:1,fb:'"Manda ver!" is een typisch Portugese aanmoediging. Informeel.'},
+  {cat:'greetings',diff:1,type:'mc',pt:'Saúde!',nl:'Gezondheid! (bij niezen) / Proost!',opts:['Bedankt!','Op jou!','Gezondheid! / Proost!','Sorry!'],ans:2,fb:'"Saúde!" gebruik je bij niezen én als toost bij drinken.'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Bom apetite!',nl:'Eet smakelijk!',opts:['Veel plezier!','Eet smakelijk!','Lekker!','Geniet ervan!'],ans:1,fb:'"Bom apetite!" = eet smakelijk — zeg je voor het eten.'},
+  {cat:'greetings',diff:2,type:'mc',pt:'Boa viagem!',nl:'Goede reis!',opts:['Goed gereed!','Goede reis!','Veel succes!','Veilig thuiskomen!'],ans:1,fb:'"Boa viagem!" = goede reis! · "Boa estadia!" = prettig verblijf!'},
 
-  // TEGENWOORDIGE TIJD
-  {cat:'pres',diff:1,type:'inp',zin:'Eu ___ (falar) com o meu vizinho.',tr:'Ik praat met mijn buurman.',ans:'falo',fb:'falar → eu falo. (-ar: stam + o)'},
-  {cat:'pres',diff:1,type:'inp',zin:'Tu ___ (morar) perto do mar?',tr:'Woon jij vlakbij de zee?',ans:'moras',fb:'morar → tu moras. (-ar: stam + as)'},
-  {cat:'pres',diff:1,type:'inp',zin:'Ela ___ (trabalhar) num hospital.',tr:'Zij werkt in een ziekenhuis.',ans:'trabalha',fb:'trabalhar → ela trabalha. (-ar: stam + a)'},
-  {cat:'pres',diff:1,type:'inp',zin:'Nós ___ (comer) juntos ao jantar.',tr:'Wij eten samen aan het avondeten.',ans:'comemos',fb:'comer → nós comemos. (-er: stam + emos)'},
-  {cat:'pres',diff:1,type:'inp',zin:'Vocês ___ (beber) vinho?',tr:'Drinken jullie wijn?',ans:'bebem',fb:'beber → vocês bebem. (-er: stam + em)'},
-  {cat:'pres',diff:2,type:'inp',zin:'Eu ___ (ir) ao mercado esta tarde.',tr:'Ik ga vanmiddag naar de markt.',ans:'vou',fb:'ir is onregelmatig: vou, vais, vai, vamos, vão.'},
-  {cat:'pres',diff:2,type:'inp',zin:'Ele ___ (ter) uma casa em Lisboa.',tr:'Hij heeft een huis in Lissabon.',ans:'tem',fb:'ter is onregelmatig: tenho, tens, tem, temos, têm.'},
-  {cat:'pres',diff:2,type:'inp',zin:'O que tu ___ (fazer) agora?',tr:'Wat doe jij nu?',ans:'fazes',fb:'fazer → tu fazes. (eu faço, tu fazes, ele faz)'},
-  {cat:'pres',diff:2,type:'inp',zin:'Eu não ___ (poder) vir amanhã.',tr:'Ik kan morgen niet komen.',ans:'posso',fb:'poder → eu posso. (posso, podes, pode, podemos, podem)'},
-  {cat:'pres',diff:2,type:'inp',zin:'Tu ___ (conhecer) a Ana?',tr:'Ken jij Ana?',ans:'conheces',fb:'conhecer → tu conheces. Conhecer = persoonlijk kennen.'},
-  {cat:'pres',diff:2,type:'inp',zin:'Eu ___ (saber) onde fica.',tr:'Ik weet waar het is.',ans:'sei',fb:'saber is onregelmatig: sei, sabes, sabe, sabemos, sabem.'},
-  {cat:'pres',diff:2,type:'inp',zin:'Vocês ___ (vir) à festa no sábado?',tr:'Komen jullie zaterdag naar het feest?',ans:'vêm',fb:'vir is onregelmatig: venho, vens, vem, vimos, vêm.'},
-  {cat:'pres',diff:3,type:'mc',zin:'Eu ___ a Ana há cinco anos.',tr:'Ik ken Ana al vijf jaar.',opts:['sei','conheço','percebo'],ans:1,fb:'Mensen kennen = conhecer. → conheço a Ana.'},
-  {cat:'pres',diff:3,type:'inp',zin:'Eu ___ (ouvir) música todos os dias.',tr:'Ik luister elke dag naar muziek.',ans:'ouço',fb:'ouvir → eu ouço. (onregelmatig eerste persoon)'},
-  {cat:'pres',diff:3,type:'inp',zin:'Vocês ___ (trazer) comida para a festa?',tr:'Brengen jullie eten mee?',ans:'trazem',fb:'trazer → vocês trazem. (eu trago, tu trazes, ele traz)'},
-  {cat:'pres',diff:1,type:'inp',zin:'Tu ___ (gostar) de peixe?',tr:'Hou jij van vis?',ans:'gostas',fb:'gostar → tu gostas. Let op: gostar DE iets = houden van.'},
-  {cat:'pres',diff:2,type:'mc',zin:'Eu ___ (pedir) a conta ao empregado.',tr:'Ik vraag de rekening aan de ober.',opts:['peço','pido','pedo'],ans:0,fb:'pedir → eu peço. (onregelmatig: peço, pedes, pede, pedimos, pedem)'},
-  {cat:'pres',diff:1,type:'inp',zin:'Nós ___ (precisar) de ajuda.',tr:'Wij hebben hulp nodig.',ans:'precisamos',fb:'precisar → nós precisamos. Precisar DE iets = nodig hebben.'},
-  {cat:'pres',diff:2,type:'inp',zin:'Ela ___ (dormir) pouco durante a semana.',tr:'Zij slaapt weinig doordeweeks.',ans:'dorme',fb:'dormir → ela dorme. Let op: eu durmo, tu dormes, ela dorme.'},
+  // ---- CAFÉ & RESTAURANT (30) ----
+  {cat:'cafe',diff:1,type:'mc',pt:'Uma bica, se faz favor.',nl:'Een espresso, alstublieft.',opts:['Een koffie verkeerd.','Een espresso.','Een thee.','Een bier.'],ans:1,fb:'"Bica" is de Portugese espresso. In het noorden zegt men "cimbalino".'},
+  {cat:'cafe',diff:1,type:'mc',pt:'Um galão, por favor.',nl:'Een grote koffie met melk, alstublieft.',opts:['Een cappuccino.','Een grote koffie met veel melk.','Een zwarte koffie.','Een thee.'],ans:1,fb:'"Galão" = grote koffie met veel melk (3/4 melk). Minder sterk dan een bica.'},
+  {cat:'cafe',diff:1,type:'mc',pt:'A conta, se faz favor!',nl:'De rekening, alstublieft!',opts:['Nog een glas!','De rekening!','De menukaart!','Het dessert!'],ans:1,fb:'"A conta" = de rekening. Dit is de meest gebruikte zin in restaurants.'},
+  {cat:'cafe',diff:1,type:'mc',pt:'Queria uma mesa para dois.',nl:'Ik zou graag een tafel voor twee willen.',opts:['Ik wil betalen.','Een tafel voor twee.','De menukaart graag.','Wij willen bestellen.'],ans:1,fb:'"Queria" (onvoltooid verleden) klinkt beleefder dan "quero".'},
+  {cat:'cafe',diff:1,type:'mc',pt:'O que tem para comer?',nl:'Wat heeft u te eten?',opts:['Wat is het lekkerst?','Wat heeft u te eten?','Wanneer sluit u?','Hoe groot zijn de porties?'],ans:1,fb:'Gebruik dit als er geen menukaart is of als je de dagschotel wilt weten.'},
+  {cat:'cafe',diff:1,type:'mc',pt:'Qual é o prato do dia?',nl:'Wat is het dagmenu?',opts:['Wat is het populairst?','Wat is het dagmenu?','Wat is de soep?','Wat zijn de kosten?'],ans:1,fb:'"Prato do dia" = dagschotel — altijd een goede keuze in Portugal!'},
+  {cat:'cafe',diff:1,type:'mc',pt:'Está incluído o serviço?',nl:'Is de bediening inbegrepen?',opts:['Is het vers?','Is bediening inbegrepen?','Is het vegetarisch?','Wat zit erin?'],ans:1,fb:'Fooi (gorjeta) is in Portugal niet verplicht maar wordt gewaardeerd.'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Pode trazer mais pão?',nl:'Kunt u meer brood brengen?',opts:['Kunt u water brengen?','Kunt u meer brood brengen?','Kunt u de rekening brengen?','Kunt u dat weghalen?'],ans:1,fb:'Let op: in Portugal brengen ze automatisch brood en boter — dat kost extra!'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Sou alérgico/a a...',nl:'Ik ben allergisch voor...',opts:['Ik hou niet van...','Ik ben allergisch voor...','Ik wil geen...','Ik eet geen...'],ans:1,fb:'Essentieel als je een allergie hebt. Bijv: "Sou alérgico/a a frutos secos."'},
+  {cat:'cafe',diff:1,type:'mc',pt:'Não como carne.',nl:'Ik eet geen vlees.',opts:['Ik hou niet van vlees.','Ik eet geen vlees.','Ik ben vegetariër.','Ik eet alleen vis.'],ans:1,fb:'"Carne" = vlees · "Peixe" = vis · "Marisco" = zeevruchten.'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Está muito bom!',nl:'Het is erg lekker!',opts:['Het is oké.','Het is erg lekker!','Het is te zout.','Het is koud.'],ans:1,fb:'"Está muito bom!" — gebruik estar, niet ser, voor smaak na het proeven.'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Pode repetir, por favor?',nl:'Kunt u dat herhalen, alstublieft?',opts:['Kunt u langzamer praten?','Kunt u dat herhalen?','Kunt u dat opschrijven?','Spreekt u Engels?'],ans:1,fb:'Essentieel als je iets niet verstaat.'},
+  {cat:'cafe',diff:1,type:'mc',pt:'Uma garrafa de água, por favor.',nl:'Een fles water, alstublieft.',opts:['Een glas water.','Een fles water.','Een fles wijn.','Koud water.'],ans:1,fb:'"Garrafa" = fles · "Copo" = glas · "Com gás" = bruisend · "Sem gás" = plat'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Água com ou sem gás?',nl:'Water met of zonder bubbels?',opts:['Warm of koud?','Met of zonder bubbels?','Groot of klein?','Wit of rood?'],ans:1,fb:'"Com gás" = bruisend · "Sem gás" = plat water.'},
+  {cat:'cafe',diff:1,type:'mc',pt:'Um copo de vinho tinto.',nl:'Een glas rode wijn.',opts:['Een glas witte wijn.','Een glas rosé.','Een glas rode wijn.','Een fles wijn.'],ans:2,fb:'"Tinto" = rood · "Branco" = wit · "Rosé" = rosé · "Verde" = jonge wijn'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Tem sobremesa?',nl:'Heeft u dessert?',opts:['Heeft u de rekening?','Heeft u dessert?','Heeft u een menukaart?','Heeft u een tafel?'],ans:1,fb:'"Sobremesa" = dessert/nagerecht. Pas op: in Brazilië betekent het "gezellig napraten".'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Posso pagar com cartão?',nl:'Kan ik met kaart betalen?',opts:['Kan ik contant betalen?','Kan ik met kaart betalen?','Kan ik splitsen?','Kan ik later betalen?'],ans:1,fb:'"Cartão" = (bank)kaart. Veel kleine cafés in Portugal nemen alleen contant!'},
+  {cat:'cafe',diff:3,type:'mc',pt:'Pode embrulhar para levar?',nl:'Kunt u het inpakken om mee te nemen?',opts:['Kunt u het opwarmen?','Kunt u het inpakken?','Kunt u het apart zetten?','Kunt u het verwarmen?'],ans:1,fb:'Handig als je te veel hebt besteld.'},
+  {cat:'cafe',diff:3,type:'mc',pt:'Está a faltar um prato.',nl:'Er ontbreekt een gerecht.',opts:['Er zijn te veel gerechten.','Er ontbreekt een gerecht.','Het gerecht is koud.','Het gerecht is verkeerd.'],ans:1,fb:'"Faltar" = ontbreken/missen. "Falta" = er ontbreekt.'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Petiscos, por favor.',nl:'Hapjes / tapas, alstublieft.',opts:['Een voorgerecht.','Hapjes / tapas.','Een snack.','Wat chips.'],ans:1,fb:'"Petiscos" zijn de Portugese versie van tapas — kleine gerechten om te delen.'},
+  {cat:'cafe',diff:1,type:'mc',pt:'Uma imperial, se faz favor.',nl:'Een pils/klein biertje, alstublieft.',opts:['Een groot bier.','Een fles bier.','Een klein bier van de tap.','Een donker bier.'],ans:2,fb:'"Imperial" = klein biertje van de tap (0,2L) in het zuiden. In het noorden: "fino".'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Sem açúcar, por favor.',nl:'Zonder suiker, alstublieft.',opts:['Met suiker.','Weinig suiker.','Zonder suiker.','Meer suiker.'],ans:2,fb:'"Açúcar" = suiker · "Sal" = zout · "Pimenta" = peper.'},
+  {cat:'cafe',diff:3,type:'mc',pt:'É para partilhar?',nl:'Is het om te delen?',opts:['Is het voor twee personen?','Is het om te delen?','Is het een portie?','Is het een half portie?'],ans:1,fb:'"Partilhar" = delen. Petiscos zijn bedoeld om te delen.'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Pode trazer a ementa?',nl:'Kunt u de menukaart brengen?',opts:['Kunt u de rekening brengen?','Kunt u de menukaart brengen?','Kunt u de ober roepen?','Kunt u het eten brengen?'],ans:1,fb:'"Ementa" = menukaart (PT) · "Cardápio" = menukaart (BR).'},
+  {cat:'cafe',diff:1,type:'mc',pt:'Está pronto?',nl:'Is het klaar? / Bent u klaar?',opts:['Is het lekker?','Hebt u het besteld?','Is het klaar?','Kunt u wachten?'],ans:2,fb:'Ober vraagt: "Está pronto para pedir?" = bent u klaar om te bestellen?'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Meio-dose, por favor.',nl:'Een halve portie, alstublieft.',opts:['Een dubbele portie.','Een grote portie.','Een halve portie.','Een extra portie.'],ans:2,fb:'Veel Portugese restaurants bieden "meia dose" (halve portie) aan — goedkoper!'},
+  {cat:'cafe',diff:3,type:'mc',pt:'Tem couverts?',nl:'Zijn er couvert(kosten)?',opts:['Zijn er bijgerechten?','Zijn er couvertkosten?','Is er een buffet?','Zijn er dagspecials?'],ans:1,fb:'"Couvert" = het brood, boter en hapjes die ze automatisch brengen — je betaalt ervoor als je het aanraakt!'},
+  {cat:'cafe',diff:1,type:'mc',pt:'Quanto custa?',nl:'Hoeveel kost het?',opts:['Hoe laat is het?','Hoeveel kost het?','Hoe ver is het?','Hoe groot is het?'],ans:1,fb:'"Quanto custa?" of "Quanto é?" = hoeveel kost het?'},
+  {cat:'cafe',diff:2,type:'mc',pt:'Vamos pagar separado.',nl:'We betalen apart.',opts:['We betalen samen.','We betalen apart.','We delen de rekening.','We betalen de helft.'],ans:1,fb:'"Separado" = apart · "Junto" = samen.'},
+  {cat:'cafe',diff:3,type:'mc',pt:'O bacalhau está excelente.',nl:'De kabeljauw is uitstekend.',opts:['De kabeljauw is prima.','De kabeljauw is uitstekend.','De kabeljauw is te zout.','De kabeljauw is koud.'],ans:1,fb:'"Bacalhau" = kabeljauw — het nationale gerecht van Portugal! Er zijn meer dan 365 recepten.'},
 
-  // VERLEDEN TIJD
-  {cat:'pret',diff:1,type:'inp',zin:'Ontem eu ___ (comer) bacalhau.',tr:'Gisteren at ik kabeljauw.',ans:'comi',fb:'comer → eu comi. (-er verleden: stam + i)'},
-  {cat:'pret',diff:1,type:'inp',zin:'Tu ___ (falar) com ela ontem?',tr:'Heb jij gisteren met haar gesproken?',ans:'falaste',fb:'falar → tu falaste. (-ar verleden: stam + aste)'},
-  {cat:'pret',diff:1,type:'inp',zin:'Ela ___ (partir) cedo esta manhã.',tr:'Zij vertrok vroeg vanochtend.',ans:'partiu',fb:'partir → ela partiu. (-ir verleden: stam + iu)'},
-  {cat:'pret',diff:1,type:'inp',zin:'Nós ___ (beber) vinho ao jantar.',tr:'Wij dronken wijn bij het avondeten.',ans:'bebemos',fb:'beber → nós bebemos. Identiek aan tegenwoordige tijd — context maakt het duidelijk!'},
-  {cat:'pret',diff:1,type:'inp',zin:'Vocês ___ (trabalhar) ontem?',tr:'Hebben jullie gisteren gewerkt?',ans:'trabalharam',fb:'trabalhar → vocês trabalharam. (-ar: stam + aram)'},
-  {cat:'pret',diff:2,type:'inp',zin:'Eu ___ (ir) à praia no fim de semana.',tr:'Ik ging in het weekend naar het strand.',ans:'fui',fb:'ir/ser verleden tijd: fui, foste, foi, fomos, foram.'},
-  {cat:'pret',diff:2,type:'inp',zin:'Eles ___ (ter) muita sorte.',tr:'Zij hadden veel geluk.',ans:'tiveram',fb:'ter → tiveram. (tive, tiveste, teve, tivemos, tiveram)'},
-  {cat:'pret',diff:2,type:'inp',zin:'O que tu ___ (fazer) ontem à noite?',tr:'Wat deed jij gisteren avond?',ans:'fizeste',fb:'fazer → tu fizeste. (fiz, fizeste, fez, fizemos, fizeram)'},
-  {cat:'pret',diff:2,type:'inp',zin:'Ela ___ (vir) de comboio.',tr:'Zij kwam met de trein.',ans:'veio',fb:'vir → veio. (vim, vieste, veio, viemos, vieram)'},
-  {cat:'pret',diff:2,type:'inp',zin:'Esta manhã eu ___ (acordar) cedo.',tr:'Vanochtend werd ik vroeg wakker.',ans:'acordei',fb:'acordar → eu acordei. (-ar: stam + ei)'},
-  {cat:'pret',diff:2,type:'inp',zin:'Tu ___ (perceber) o que ele disse?',tr:'Begreep jij wat hij zei?',ans:'percebeste',fb:'perceber → tu percebeste. (-er: stam + este)'},
-  {cat:'pret',diff:2,type:'inp',zin:'Nós ___ (sair) tarde ontem à noite.',tr:'Wij gingen gisteren laat weg.',ans:'saímos',fb:'sair → saímos. (saí, saíste, saiu, saímos, saíram)'},
-  {cat:'pret',diff:3,type:'inp',zin:'Eu ___ (trazer) vinho para o jantar.',tr:'Ik bracht wijn mee voor het diner.',ans:'trouxe',fb:'trazer → trouxe. Sterk onregelmatig! (trouxe, trouxeste, trouxe, trouxemos, trouxeram)'},
-  {cat:'pret',diff:3,type:'inp',zin:'Ontem à noite eu ___ (ler) um livro.',tr:'Gisteren avond las ik een boek.',ans:'li',fb:'ler → eu li. (li, leste, leu, lemos, leram)'},
-  {cat:'pret',diff:3,type:'inp',zin:'Eles ___ (dizer) que chegam amanhã.',tr:'Zij zeiden dat ze morgen aankomen.',ans:'disseram',fb:'dizer → disseram. (disse, disseste, disse, dissemos, disseram)'},
-  {cat:'pret',diff:3,type:'inp',zin:'Tu ___ (vir) de carro ou de comboio?',tr:'Kwam jij met de auto of de trein?',ans:'vieste',fb:'vir → tu vieste. (vim, vieste, veio, viemos, vieram)'},
-  {cat:'pret',diff:2,type:'inp',zin:'Eu nunca ___ (ver) o mar antes.',tr:'Ik had de zee nooit eerder gezien.',ans:'vi',fb:'ver → eu vi. (vi, viste, viu, vimos, viram)'},
-  {cat:'pret',diff:3,type:'mc',zin:'Na semana passada eu ___ muito trabalho.',tr:'Vorige week had ik veel werk.',opts:['tive','tinha','teve'],ans:0,fb:'Afgeronde actie = pretérito perfeito → eu tive.'},
-  {cat:'pret',diff:1,type:'inp',zin:'Ontem eu ___ (comprar) pão na padaria.',tr:'Gisteren kocht ik brood bij de bakker.',ans:'comprei',fb:'comprar → eu comprei. (-ar: stam + ei)'},
-  {cat:'pret',diff:2,type:'inp',zin:'Ele ___ (esquecer) o casaco em casa.',tr:'Hij vergat zijn jas thuis.',ans:'esqueceu',fb:'esquecer → ele esqueceu. (-er: stam + eu)'},
-  {cat:'pret',diff:3,type:'inp',zin:'Eu não ___ (poder) dormir.',tr:'Ik kon niet slapen.',ans:'pude',fb:'poder → eu pude. (pude, pudeste, pôde, pudemos, puderam)'},
-  {cat:'pret',diff:3,type:'inp',zin:'Nós ___ (ser) muito felizes lá.',tr:'Wij waren daar erg gelukkig.',ans:'fomos',fb:'ser verleden tijd = fomos. Zelfde als ir — context maakt het duidelijk.'},
+  // ---- WINKELEN (25) ----
+  {cat:'shopping',diff:1,type:'mc',pt:'Quanto custa isto?',nl:'Hoeveel kost dit?',opts:['Hoe groot is dit?','Hoeveel kost dit?','Wat is dit?','Heeft u dit?'],ans:1,fb:'"Quanto custa isto?" of "Qual é o preço?" = wat is de prijs?'},
+  {cat:'shopping',diff:1,type:'mc',pt:'Tem em tamanho maior?',nl:'Heeft u het in een grotere maat?',opts:['Heeft u het in een andere kleur?','Heeft u het in een grotere maat?','Heeft u het in een kleinere maat?','Heeft u het in een andere stijl?'],ans:1,fb:'"Maior" = groter · "Menor/Mais pequeno" = kleiner · "Tamanho" = maat/grootte'},
+  {cat:'shopping',diff:1,type:'mc',pt:'Posso experimentar?',nl:'Mag ik het passen/proberen?',opts:['Mag ik het kopen?','Mag ik het passen?','Mag ik het terugbrengen?','Mag ik korting?'],ans:1,fb:'"Experimentar" = proberen/passen · "Provar" = proeven (eten).'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Tem desconto?',nl:'Heeft u korting?',opts:['Heeft u aanbieding?','Heeft u korting?','Is het in de uitverkoop?','Kunt u minder vragen?'],ans:1,fb:'"Desconto" = korting · "Saldo/promoção" = aanbieding · "Liquidação" = uitverkoop.'},
+  {cat:'shopping',diff:1,type:'mc',pt:'Só estou a ver, obrigado.',nl:'Ik kijk alleen maar, dank u.',opts:['Ik heb al een keuze gemaakt.','Ik kijk alleen maar.','Ik zoek iets speciaals.','Ik kom zo terug.'],ans:1,fb:'Handig als je niet lastiggevallen wil worden in een winkel.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Tem troco?',nl:'Heeft u wisselgeld?',opts:['Heeft u een bon?','Heeft u wisselgeld?','Heeft u kleingeld?','Heeft u een tas?'],ans:1,fb:'"Troco" = wisselgeld/teruggave · "Trocos" = kleingeld.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Pode embrulhar para oferta?',nl:'Kunt u het als cadeau inpakken?',opts:['Kunt u een tas geven?','Kunt u het als cadeau inpakken?','Kunt u een bon geven?','Kunt u het verzenden?'],ans:1,fb:'"Oferta" = cadeau (ook: regalo). "Embrulhar" = inpakken.'},
+  {cat:'shopping',diff:1,type:'mc',pt:'Onde fica a caixa?',nl:'Waar is de kassa?',opts:['Waar is de uitgang?','Waar is de kassa?','Waar zijn de toiletten?','Waar is de ingang?'],ans:1,fb:'"Caixa" = kassa · "Saída" = uitgang · "Entrada" = ingang.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Tem fatura?',nl:'Heeft u een factuur?',opts:['Heeft u een bon?','Heeft u een factuur?','Heeft u een garantie?','Heeft u een zak?'],ans:1,fb:'"Fatura" = formele factuur (met NIF) · "Recibo" = gewone bon.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Posso devolver?',nl:'Kan ik het terugbrengen?',opts:['Kan ik het ruilen?','Kan ik het terugbrengen?','Kan ik korting krijgen?','Kan ik het retourneren?'],ans:1,fb:'"Devolver" = terugbrengen/retourneren · "Trocar" = ruilen.'},
+  {cat:'shopping',diff:1,type:'mc',pt:'Onde fica o supermercado?',nl:'Waar is de supermarkt?',opts:['Waar is de bakker?','Waar is de supermarkt?','Waar is de markt?','Waar is de slager?'],ans:1,fb:'"Supermercado" = supermarkt · "Mercado" = (vers)markt · "Mercearia" = kruidenier.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Queria meio quilo de tomates.',nl:'Ik wil graag een half kilo tomaten.',opts:['Ik wil een kilo tomaten.','Ik wil een half kilo tomaten.','Ik wil twee kilo tomaten.','Ik wil een pond tomaten.'],ans:1,fb:'"Meio quilo" = 500g · "Um quilo" = 1kg · "Duzentos gramas" = 200g.'},
+  {cat:'shopping',diff:3,type:'mc',pt:'Tem alguma coisa mais barata?',nl:'Heeft u iets goedkopers?',opts:['Heeft u iets groters?','Heeft u iets goedkopers?','Heeft u iets mooiers?','Heeft u iets beters?'],ans:1,fb:'"Barato" = goedkoop · "Caro" = duur · "Mais barato" = goedkoper.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Está em promoção?',nl:'Is het in de aanbieding?',opts:['Is het nieuw?','Is het in de aanbieding?','Is het de laatste?','Is het verkrijgbaar?'],ans:1,fb:'"Promoção" = aanbieding · "Oferta especial" = speciale aanbieding.'},
+  {cat:'shopping',diff:1,type:'mc',pt:'Preciso de uma sacola.',nl:'Ik heb een tas nodig.',opts:['Ik wil een tas kopen.','Ik heb een tas nodig.','Heeft u tassen?','Geeft u mij een tas?'],ans:1,fb:'"Sacola" of "Saco" = (plastic) tas · In Portugal betaal je voor plastic tassen.'},
+  {cat:'shopping',diff:3,type:'mc',pt:'Pode fazer um desconto?',nl:'Kunt u korting geven?',opts:['Kunt u het goedkoper maken?','Kunt u korting geven?','Kunt u de prijs verlagen?','Kunt u mij helpen?'],ans:1,fb:'In kleine winkels en markten kun je soms onderhandelen over de prijs.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Tem em stock?',nl:'Heeft u het op voorraad?',opts:['Heeft u het in de winkel?','Heeft u het op voorraad?','Heeft u het besteld?','Heeft u het geleverd?'],ans:1,fb:'"Em stock" = op voorraad · "Esgotado" = uitverkocht.'},
+  {cat:'shopping',diff:3,type:'mc',pt:'Qual é a validade?',nl:'Wat is de houdbaarheidsdatum?',opts:['Wat is de prijs?','Wat is de houdbaarheidsdatum?','Wat is het gewicht?','Wat zijn de ingrediënten?'],ans:1,fb:'"Validade" = houdbaarheidsdatum · "Data de validade" = vervaldatum.'},
+  {cat:'shopping',diff:1,type:'mc',pt:'Onde é a farmácia?',nl:'Waar is de apotheek?',opts:['Waar is het ziekenhuis?','Waar is de apotheek?','Waar is de dokter?','Waar is de drogist?'],ans:1,fb:'"Farmácia" = apotheek — herkenbaar aan het groene kruis. 24-uur dienst rouleert.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Tem aspirinas?',nl:'Heeft u aspirine?',opts:['Heeft u vitamines?','Heeft u aspirine?','Heeft u pleisters?','Heeft u hoestdrank?'],ans:1,fb:'In Portugal koop je medicijnen bij de farmácia, niet in de supermarkt.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Aceita Multibanco?',nl:'Accepteert u Multibanco (Portugese bankpas)?',opts:['Accepteert u Visa?','Accepteert u Multibanco?','Accepteert u contant?','Accepteert u creditcard?'],ans:1,fb:'"Multibanco" is het Portugese betaalnetwerk — vrijwel overal geaccepteerd.'},
+  {cat:'shopping',diff:3,type:'mc',pt:'É artesanal?',nl:'Is het ambachtelijk/handgemaakt?',opts:['Is het biologisch?','Is het ambachtelijk?','Is het lokaal?','Is het vers?'],ans:1,fb:'"Artesanal" = ambachtelijk/handgemaakt · "Biológico" = biologisch · "Local" = lokaal.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'Onde posso encontrar o azeite?',nl:'Waar kan ik olijfolie vinden?',opts:['Waar is de vleeswaren?','Waar is de olijfolie?','Waar zijn de zuivelproducten?','Waar zijn de groenten?'],ans:1,fb:'"Azeite" = olijfolie — Portugal is een van de grootste producenten ter wereld!'},
+  {cat:'shopping',diff:1,type:'mc',pt:'Aberto ou fechado?',nl:'Open of gesloten?',opts:['Groot of klein?','Open of gesloten?','Goedkoop of duur?','Vol of leeg?'],ans:1,fb:'"Aberto" = open · "Fechado" = gesloten.'},
+  {cat:'shopping',diff:2,type:'mc',pt:'A que horas fecha?',nl:'Hoe laat sluit het?',opts:['Hoe laat opent het?','Hoe laat sluit het?','Wanneer is het open?','Is het de hele dag open?'],ans:1,fb:'"Fechar" = sluiten · "Abrir" = openen · "Horário" = openingstijden.'},
+
+  // ---- WEG VRAGEN (20) ----
+  {cat:'directions',diff:1,type:'mc',pt:'Onde fica...?',nl:'Waar is...?',opts:['Hoe ver is...?','Waar is...?','Hoe ga ik naar...?','Wanneer is...?'],ans:1,fb:'"Onde fica...?" = waar is...? Gebruik dit voor locaties. "Onde está...?" ook mogelijk.'},
+  {cat:'directions',diff:1,type:'mc',pt:'Vire à esquerda.',nl:'Sla links af.',opts:['Ga rechtdoor.','Sla rechts af.','Sla links af.','Ga terug.'],ans:2,fb:'"Esquerda" = links · "Direita" = rechts · "Em frente" = rechtdoor.'},
+  {cat:'directions',diff:1,type:'mc',pt:'Vire à direita.',nl:'Sla rechts af.',opts:['Sla links af.','Ga rechtdoor.','Ga terug.','Sla rechts af.'],ans:3,fb:'"Direita" = rechts. Onthoud: direita klinkt als "directe" — direct naar rechts!'},
+  {cat:'directions',diff:1,type:'mc',pt:'Siga em frente.',nl:'Ga rechtdoor.',opts:['Sla links af.','Ga terug.','Ga rechtdoor.','Stop hier.'],ans:2,fb:'"Em frente" = rechtdoor/vooruit · "Para trás" = naar achteren.'},
+  {cat:'directions',diff:1,type:'mc',pt:'É aqui perto?',nl:'Is het hier vlakbij?',opts:['Is het ver weg?','Is het hier vlakbij?','Is het moeilijk te vinden?','Weet u het?'],ans:1,fb:'"Perto" = dichtbij · "Longe" = ver weg.'},
+  {cat:'directions',diff:2,type:'mc',pt:'A quantos minutos fica?',nl:'Hoeveel minuten is het lopen?',opts:['Hoe laat is het?','Hoe ver is het in km?','Hoeveel minuten is het?','Hoe lang duurt het?'],ans:2,fb:'Handige vervolgvraag als iemand zegt dat het dichtbij is.'},
+  {cat:'directions',diff:2,type:'mc',pt:'É a seguir ao semáforo.',nl:'Het is vlak na het stoplicht.',opts:['Het is vlak voor het stoplicht.','Het is op het stoplicht.','Het is vlak na het stoplicht.','Het is ver na het stoplicht.'],ans:2,fb:'"Semáforo" = stoplicht · "A seguir a" = vlak na.'},
+  {cat:'directions',diff:2,type:'mc',pt:'Na segunda rua à esquerda.',nl:'De tweede straat links.',opts:['De eerste straat links.','De tweede straat rechts.','De tweede straat links.','De derde straat rechts.'],ans:2,fb:'"Primeira" = eerste · "Segunda" = tweede · "Terceira" = derde.'},
+  {cat:'directions',diff:1,type:'mc',pt:'Pode repetir mais devagar?',nl:'Kunt u het langzamer herhalen?',opts:['Kunt u luider praten?','Kunt u het herhalen?','Kunt u het langzamer herhalen?','Spreekt u Engels?'],ans:2,fb:'"Devagar" = langzaam · "Mais devagar" = langzamer. Essentieel bij aanwijzingen!'},
+  {cat:'directions',diff:2,type:'mc',pt:'Fica do lado direito.',nl:'Het is aan de rechterkant.',opts:['Het is aan de linkerkant.','Het is recht vooruit.','Het is aan de rechterkant.','Het is aan de achterkant.'],ans:2,fb:'"Do lado direito" = aan de rechterkant · "Do lado esquerdo" = aan de linkerkant.'},
+  {cat:'directions',diff:2,type:'mc',pt:'Passe a rotunda.',nl:'Ga de rotonde over.',opts:['Stop bij de rotonde.','Ga de rotonde over.','Draai bij de rotonde.','Keer om bij de rotonde.'],ans:1,fb:'"Rotunda" = rotonde — Portugal heeft er enorm veel!'},
+  {cat:'directions',diff:3,type:'mc',pt:'Tome a segunda saída na rotunda.',nl:'Neem de tweede afslag op de rotonde.',opts:['Neem de eerste afslag.','Neem de tweede afslag.','Neem de derde afslag.','Rij om de rotonde heen.'],ans:1,fb:'"Saída" = uitgang/afslag.'},
+  {cat:'directions',diff:1,type:'mc',pt:'Estou perdido/a.',nl:'Ik ben verdwaald.',opts:['Ik ben moe.','Ik ben verdwaald.','Ik ken de weg niet.','Ik ben hier nieuw.'],ans:1,fb:'"Perdido" (man) / "Perdida" (vrouw) = verdwaald. Eerlijk toegeven werkt altijd!'},
+  {cat:'directions',diff:2,type:'mc',pt:'Pode mostrar no mapa?',nl:'Kunt u het op de kaart aanwijzen?',opts:['Heeft u een kaart?','Kunt u het opschrijven?','Kunt u het op de kaart aanwijzen?','Kunt u mee lopen?'],ans:2,fb:'Handig als je de uitleg niet volledig begrijpt.'},
+  {cat:'directions',diff:2,type:'mc',pt:'É longe a pé?',nl:'Is het ver te voet?',opts:['Is het ver met de auto?','Is het ver met de bus?','Is het ver te voet?','Is het ver met de fiets?'],ans:2,fb:'"A pé" = te voet · "De carro" = met de auto · "De bicicleta" = met de fiets.'},
+  {cat:'directions',diff:3,type:'mc',pt:'Fica mesmo em frente.',nl:'Het is recht tegenover u.',opts:['Het is naast u.','Het is achter u.','Het is recht tegenover u.','Het is om de hoek.'],ans:2,fb:'"Mesmo em frente" = recht tegenover · "Ali ao lado" = daar naast.'},
+  {cat:'directions',diff:2,type:'mc',pt:'Atravesse a ponte.',nl:'Oversteek de brug.',opts:['Rij over de brug.','Oversteek de brug.','Stop voor de brug.','Keer om voor de brug.'],ans:1,fb:'"Atravessar" = oversteken/doorkruisen · "Ponte" = brug.'},
+  {cat:'directions',diff:3,type:'mc',pt:'É mesmo ali, não pode falhar!',nl:'Het is precies daar, u kunt het niet missen!',opts:['Het is een beetje verder.','Het is heel ver weg.','Het is precies daar, u kunt het niet missen!','Het is moeilijk te vinden.'],ans:2,fb:'De meest geruststellende zin als je de weg vraagt!'},
+  {cat:'directions',diff:1,type:'mc',pt:'Onde fica a paragem de autocarro?',nl:'Waar is de bushalte?',opts:['Waar is het busstation?','Waar is de bushalte?','Waar is de metro?','Waar is de taxi?'],ans:1,fb:'"Paragem" = halte (bus/metro) · "Estação" = station (trein).'},
+  {cat:'directions',diff:2,type:'mc',pt:'Suba a rua e depois vire.',nl:'Ga de straat op en sla dan af.',opts:['Ga de straat af en sla dan af.','Ga de straat op en sla dan af.','Ga de hoek om en sla af.','Ga de brug over en sla af.'],ans:1,fb:'"Subir" = omhoog gaan · "Descer" = omlaag gaan — Portugal is erg heuvelachtig!'},
+
+  // ---- TRANSPORT (20) ----
+  {cat:'transport',diff:1,type:'mc',pt:'Um bilhete para Lisboa, por favor.',nl:'Een kaartje naar Lissabon, alstublieft.',opts:['Twee kaartjes naar Lissabon.','Een retourkaartje.','Een kaartje naar Lissabon.','Een kaartje voor morgen.'],ans:2,fb:'"Bilhete" = kaartje · "Bilhete de ida e volta" = retourkaartje.'},
+  {cat:'transport',diff:1,type:'mc',pt:'A que horas parte o comboio?',nl:'Hoe laat vertrekt de trein?',opts:['Hoe laat komt de trein aan?','Hoe laat vertrekt de trein?','Op welk perron staat de trein?','Is de trein vertraagd?'],ans:1,fb:'"Comboio" = trein (PT) · "Partir" = vertrekken · "Chegar" = aankomen.'},
+  {cat:'transport',diff:1,type:'mc',pt:'Qual é o autocarro para o centro?',nl:'Welke bus gaat naar het centrum?',opts:['Hoe laat komt de bus?','Waar stopt de bus?','Welke bus gaat naar het centrum?','Is dit de juiste bus?'],ans:2,fb:'"Autocarro" = bus (PT) · "Centro" of "centro histórico" = stadscentrum.'},
+  {cat:'transport',diff:2,type:'mc',pt:'Este lugar está ocupado?',nl:'Is deze plaats bezet?',opts:['Is deze plaats vrij?','Mag ik hier zitten?','Is deze plaats bezet?','Is dit een gereserveerde plek?'],ans:2,fb:'"Ocupado" = bezet · "Livre" = vrij/beschikbaar.'},
+  {cat:'transport',diff:1,type:'mc',pt:'Pode chamar um táxi?',nl:'Kunt u een taxi bellen?',opts:['Kunt u een taxi bestellen?','Kunt u een auto huren?','Kunt u een taxi bellen?','Kunt u mij een lift geven?'],ans:2,fb:'In Portugal kun je ook een Uber of Bolt nemen — vaak goedkoper dan een taxi.'},
+  {cat:'transport',diff:2,type:'mc',pt:'Leve-me a este endereço.',nl:'Breng mij naar dit adres.',opts:['Weet u dit adres?','Is dit het juiste adres?','Breng mij naar dit adres.','Stop hier bij dit adres.'],ans:2,fb:'Handig in combinatie met je telefoon als je het adres kunt tonen.'},
+  {cat:'transport',diff:2,type:'mc',pt:'Quanto tempo demora até ao aeroporto?',nl:'Hoe lang duurt het naar het vliegveld?',opts:['Hoe ver is het vliegveld?','Hoe lang duurt het naar het vliegveld?','Wanneer is de volgende vlucht?','Wat kost het naar het vliegveld?'],ans:1,fb:'"Aeroporto" = vliegveld · "Demorar" = duren.'},
+  {cat:'transport',diff:2,type:'mc',pt:'Onde posso comprar um passe?',nl:'Waar kan ik een OV-abonnement kopen?',opts:['Waar is de kassa?','Waar koop ik een kaartje?','Waar kan ik een passe kopen?','Waar is de automaat?'],ans:2,fb:'"Passe" = openbaar vervoer abonnement · "Carregamento" = opwaarderen.'},
+  {cat:'transport',diff:3,type:'mc',pt:'O comboio tem atraso?',nl:'Heeft de trein vertraging?',opts:['Is de trein geannuleerd?','Heeft de trein vertraging?','Is de trein vroeg?','Rijdt de trein vandaag?'],ans:1,fb:'"Atraso" = vertraging · "Cancelado" = geannuleerd · "A tempo" = op tijd.'},
+  {cat:'transport',diff:2,type:'mc',pt:'Em que linha fica?',nl:'Op welke lijn is het?',opts:['Op welk perron is het?','In welke richting?','Op welke lijn is het?','In welke zone?'],ans:2,fb:'"Linha" = lijn (metro/trein) · "Plataforma" of "Cais" = perron.'},
+  {cat:'transport',diff:1,type:'mc',pt:'Preciso de ir ao aeroporto.',nl:'Ik moet naar het vliegveld.',opts:['Ik wil naar het centrum.','Ik wil naar het station.','Ik moet naar het vliegveld.','Ik wil naar het hotel.'],ans:2,fb:'"Preciso de" = ik moet/heb nodig om.'},
+  {cat:'transport',diff:3,type:'mc',pt:'Posso levar a bicicleta?',nl:'Mag ik de fiets meenemen?',opts:['Mag ik handbagage meenemen?','Mag ik de fiets meenemen?','Mag ik een hond meenemen?','Mag ik extra bagage meenemen?'],ans:1,fb:'In sommige Portugese treinen mag je fietsen meenemen — vraag het altijd even!'},
+  {cat:'transport',diff:2,type:'mc',pt:'Onde é a paragem do elétrico?',nl:'Waar is de tramhalte?',opts:['Waar is de bushalte?','Waar is de tramhalte?','Waar is het metrostation?','Waar is het treinstation?'],ans:1,fb:'"Elétrico" = tram — de iconische gele trams van Lissabon! · "Metro" = metro.'},
+  {cat:'transport',diff:2,type:'mc',pt:'Há um estacionamento aqui perto?',nl:'Is er een parkeerplaats hier vlakbij?',opts:['Is er een garage hier?','Is er gratis parkeren?','Is er een parkeerplaats hier vlakbij?','Mag ik hier parkeren?'],ans:2,fb:'"Estacionamento" of "Parque de estacionamento" = parkeerplaats/garage.'},
+  {cat:'transport',diff:1,type:'mc',pt:'Quero alugar um carro.',nl:'Ik wil een auto huren.',opts:['Ik wil een auto kopen.','Ik wil een auto lenen.','Ik wil een auto huren.','Ik wil een auto verkopen.'],ans:2,fb:'"Alugar" = huren · "Comprar" = kopen · "Vender" = verkopen.'},
+  {cat:'transport',diff:3,type:'mc',pt:'A portagem está incluída?',nl:'Is de tol inbegrepen?',opts:['Is verzekering inbegrepen?','Is benzine inbegrepen?','Is de tol inbegrepen?','Is gps inbegrepen?'],ans:2,fb:'"Portagem" = tol — Portugal heeft veel tolwegen (Via Verde). Vraag hier altijd naar bij autoverhuur!'},
+  {cat:'transport',diff:2,type:'mc',pt:'Qual é a próxima paragem?',nl:'Wat is de volgende halte?',opts:['Wat is de eindhalte?','Wat is de vorige halte?','Wat is de volgende halte?','Wat is de eerste halte?'],ans:2,fb:'"Próxima" = volgende · "Anterior" = vorige · "Última" = laatste/eind.'},
+  {cat:'transport',diff:3,type:'mc',pt:'Tenho de fazer correspondência?',nl:'Moet ik overstappen?',opts:['Moet ik betalen?','Moet ik reserveren?','Moet ik overstappen?','Moet ik wachten?'],ans:2,fb:'"Correspondência" = overstap/aansluiting · "Fazer correspondência" = overstappen.'},
+  {cat:'transport',diff:1,type:'mc',pt:'Onde é a estação de comboios?',nl:'Waar is het treinstation?',opts:['Waar is het busstation?','Waar is het treinstation?','Waar is de metro?','Waar is het vliegveld?'],ans:1,fb:'"Estação de comboios" = treinstation · "Terminal de autocarros" = busstation.'},
+  {cat:'transport',diff:2,type:'mc',pt:'O bilhete é válido para o metro?',nl:'Is het kaartje geldig voor de metro?',opts:['Is het kaartje ook voor de bus?','Is het kaartje geldig voor de metro?','Is het kaartje voor één rit?','Is het kaartje voor de hele dag?'],ans:1,fb:'In Lissabon kun je dag/weekpassen kopen die geldig zijn voor bus, metro en tram.'},
+
+  // ---- GEZONDHEID (20) ----
+  {cat:'health',diff:1,type:'mc',pt:'Preciso de um médico.',nl:'Ik heb een dokter nodig.',opts:['Ik wil naar een dokter.','Ik heb een dokter nodig.','Bel een dokter.','Waar is de dokter?'],ans:1,fb:'"Médico" = dokter · "Centro de saúde" = huisartsenpraktijk · "Hospital" = ziekenhuis.'},
+  {cat:'health',diff:1,type:'mc',pt:'Tenho dores de cabeça.',nl:'Ik heb hoofdpijn.',opts:['Ik heb buikpijn.','Ik heb hoofdpijn.','Ik heb keelpijn.','Ik heb rugpijn.'],ans:1,fb:'"Dores de cabeça" = hoofdpijn · "Dores de barriga" = buikpijn · "Dores de garganta" = keelpijn.'},
+  {cat:'health',diff:1,type:'mc',pt:'Não me sinto bem.',nl:'Ik voel me niet goed.',opts:['Ik ben ziek.','Ik voel me niet goed.','Ik heb pijn.','Ik ben moe.'],ans:1,fb:'"Não me sinto bem" is de meest algemene manier om aan te geven dat je je niet lekker voelt.'},
+  {cat:'health',diff:2,type:'mc',pt:'Sou alérgico/a à penicilina.',nl:'Ik ben allergisch voor penicilline.',opts:['Ik verdraag penicilline niet.','Ik ben allergisch voor penicilline.','Ik gebruik penicilline.','Ik heb penicilline nodig.'],ans:1,fb:'Essentieel om te weten voor een noodgeval! "Alérgico" (man) / "Alérgica" (vrouw).'},
+  {cat:'health',diff:2,type:'mc',pt:'Tomo este medicamento.',nl:'Ik gebruik dit medicament.',opts:['Ik wil dit medicament.','Ik gebruik dit medicament.','Ik heb dit medicament nodig.','Ik stop met dit medicament.'],ans:1,fb:'"Medicamento" of "Medicina" = medicament · "Receita" = recept · "Comprimido" = pil.'},
+  {cat:'health',diff:1,type:'mc',pt:'Pode chamar uma ambulância?',nl:'Kunt u een ambulance bellen?',opts:['Bel de politie.','Bel de brandweer.','Kunt u een ambulance bellen?','Kunt u de dokter bellen?'],ans:2,fb:'Noodnummer Portugal: 112 (politie, brandweer, ambulance).'},
+  {cat:'health',diff:2,type:'mc',pt:'Onde é o centro de saúde?',nl:'Waar is de huisartsenpraktijk?',opts:['Waar is het ziekenhuis?','Waar is de huisartsenpraktijk?','Waar is de apotheek?','Waar is de tandarts?'],ans:1,fb:'"Centro de saúde" = huisartsenpraktijk/gezondheidscentrum.'},
+  {cat:'health',diff:2,type:'mc',pt:'Tenho febre.',nl:'Ik heb koorts.',opts:['Ik heb het koud.','Ik heb het warm.','Ik heb koorts.','Ik beef.'],ans:2,fb:'"Febre" = koorts · "Temperatura" = temperatuur. Normaal is 37°C, koorts vanaf 38°C.'},
+  {cat:'health',diff:2,type:'mc',pt:'Vomitei.',nl:'Ik heb overgegeven.',opts:['Ik heb misselijkheid.','Ik voelde me ziek.','Ik heb overgegeven.','Ik viel flauw.'],ans:2,fb:'"Vomitar" = overgeven · "Náuseas" = misselijkheid · "Tonturas" = duizeligheid.'},
+  {cat:'health',diff:3,type:'mc',pt:'Tenho uma consulta marcada.',nl:'Ik heb een afspraak gemaakt.',opts:['Ik wil een afspraak maken.','Ik heb een afspraak gemaakt.','Ik wil een dokter zien.','Ik heb een urgentie.'],ans:1,fb:'"Consulta" = doktersafspraak · "Marcar" = boeken/afspreken.'},
+  {cat:'health',diff:2,type:'mc',pt:'Aqui dói.',nl:'Hier doet het pijn.',opts:['Hier klopt het.','Hier is de wond.','Hier doet het pijn.','Hier is het gebroken.'],ans:2,fb:'"Dói" = het doet pijn (van "doer"). Je kunt wijzen terwijl je dit zegt.'},
+  {cat:'health',diff:1,type:'mc',pt:'Preciso de uma receita.',nl:'Ik heb een recept nodig.',opts:['Ik heb een medicament nodig.','Ik heb een recept nodig.','Ik heb een verklaring nodig.','Ik heb een dokter nodig.'],ans:1,fb:'"Receita" = recept (medisch) maar ook kookrecept! Context bepaalt de betekenis.'},
+  {cat:'health',diff:3,type:'mc',pt:'Tenho diabetes.',nl:'Ik heb diabetes.',opts:['Ik ben diabetespatiënt.','Ik heb diabetes.','Ik gebruik insuline.','Ik heb suiker.'],ans:1,fb:'Belangrijk om te vermelden bij een doktersbezoek. "Diabetes" is hetzelfde in het Portugees.'},
+  {cat:'health',diff:2,type:'mc',pt:'Estou grávida.',nl:'Ik ben zwanger.',opts:['Ik verwacht een baby.','Ik ben in verwachting.','Ik ben zwanger.','Ik heb een zwangerschap.'],ans:2,fb:'"Grávida" = zwanger (vrouw). Essentieel om te vermelden bij een doktersbezoek.'},
+  {cat:'health',diff:3,type:'mc',pt:'Tenho pressão arterial alta.',nl:'Ik heb hoge bloeddruk.',opts:['Ik heb lage bloeddruk.','Ik heb hartproblemen.','Ik heb hoge bloeddruk.','Ik heb een slechte conditie.'],ans:2,fb:'"Pressão arterial alta" = hoge bloeddruk · "Baixa" = laag.'},
+  {cat:'health',diff:2,type:'mc',pt:'Onde é a urgência?',nl:'Waar is de spoedeisende hulp?',opts:['Waar is de dokter?','Waar is de apotheek?','Waar is de spoedeisende hulp?','Waar is de receptie?'],ans:2,fb:'"Urgência" = spoedeisende hulp/eerste hulp.'},
+  {cat:'health',diff:1,type:'mc',pt:'Tenho seguro de saúde.',nl:'Ik heb een ziektekostenverzekering.',opts:['Ik heb geen verzekering.','Ik heb een ziektekostenverzekering.','Ik wil een verzekering.','Ik heb een Europese zorgpas.'],ans:1,fb:'"Seguro de saúde" = ziektekostenverzekering · "Cartão europeu de seguro de doença" = Europese zorgpas.'},
+  {cat:'health',diff:3,type:'mc',pt:'Pode passar uma declaração?',nl:'Kunt u een verklaring opstellen?',opts:['Kunt u een recept schrijven?','Kunt u een verklaring opstellen?','Kunt u een rapport maken?','Kunt u een brief schrijven?'],ans:1,fb:'Nodig voor de verzekering of je werkgever.'},
+  {cat:'health',diff:2,type:'mc',pt:'Tenho uma picada de insecto.',nl:'Ik heb een insectenbeet.',opts:['Ik heb een wond.','Ik heb een allergie.','Ik heb een insectenbeet.','Ik heb een steek.'],ans:2,fb:'"Picada" = steek/beet · "Insecto" = insect. In de zomer veel muggen (mosquitos) in Portugal!'},
+  {cat:'health',diff:2,type:'mc',pt:'Fui ao médico ontem.',nl:'Ik ben gisteren naar de dokter geweest.',opts:['Ik ga morgen naar de dokter.','Ik was bij de dokter.','Ik ben gisteren naar de dokter geweest.','Ik moet naar de dokter.'],ans:2,fb:'"Fui" = ik ging (ir, verleden tijd) · "Ontem" = gisteren.'},
+
+  // ---- SMALLTALK & KENNISMAKEN (25) ----
+  {cat:'social',diff:1,type:'mc',pt:'De onde é?',nl:'Waar komt u vandaan?',opts:['Waar woont u?','Waar werkt u?','Waar komt u vandaan?','Hoe oud bent u?'],ans:2,fb:'"De onde é?" (formeel) / "De onde és?" (informeel) = waar kom je vandaan?'},
+  {cat:'social',diff:1,type:'mc',pt:'Sou dos Países Baixos.',nl:'Ik kom uit Nederland.',opts:['Ik kom uit België.','Ik kom uit Duitsland.','Ik kom uit Nederland.','Ik kom uit Engeland.'],ans:2,fb:'"Países Baixos" = Nederland · "Holandês/a" = Nederlander/s.'},
+  {cat:'social',diff:1,type:'mc',pt:'Há quanto tempo está em Portugal?',nl:'Hoe lang bent u al in Portugal?',opts:['Wanneer gaat u weg?','Wanneer bent u gekomen?','Hoe lang bent u al in Portugal?','Vindt u Portugal leuk?'],ans:2,fb:'"Há quanto tempo" = hoe lang (al) · "Há" + tijdsduur = al X lang.'},
+  {cat:'social',diff:2,type:'mc',pt:'Já fala bem português!',nl:'U spreekt al goed Portugees!',opts:['U spreekt een beetje Portugees.','U spreekt al goed Portugees!','Oefent u hard?','Spreekt u Portugees?'],ans:1,fb:'Het grootste compliment dat je kunt krijgen! Antwoord: "Ainda estou a aprender." (ik leer nog)'},
+  {cat:'social',diff:1,type:'mc',pt:'Ainda estou a aprender.',nl:'Ik ben nog aan het leren.',opts:['Ik spreek niet goed.','Ik ben nog aan het leren.','Ik spreek een beetje.','Ik begrijp niets.'],ans:1,fb:'Eerlijk en sympathiek — Portugezen waarderen het als je hun taal leert!'},
+  {cat:'social',diff:2,type:'mc',pt:'Gosto muito de Portugal.',nl:'Ik vind Portugal erg leuk.',opts:['Ik ken Portugal.','Ik bezoek Portugal.','Ik vind Portugal erg leuk.','Ik woon in Portugal.'],ans:2,fb:'Altijd goed om te zeggen! Portugezen zijn erg trots op hun land.'},
+  {cat:'social',diff:2,type:'mc',pt:'O que faz profissionalmente?',nl:'Wat doet u voor werk?',opts:['Wat zijn uw hobby\'s?','Wat heeft u gestudeerd?','Wat doet u voor werk?','Waar werkt u?'],ans:2,fb:'"Profissionalmente" = beroepsmatig · "Profissão" = beroep.'},
+  {cat:'social',diff:1,type:'mc',pt:'Tem filhos?',nl:'Heeft u kinderen?',opts:['Bent u getrouwd?','Heeft u broers of zussen?','Heeft u kinderen?','Heeft u familie hier?'],ans:2,fb:'"Filhos" = kinderen · "Filho" = zoon · "Filha" = dochter.'},
+  {cat:'social',diff:2,type:'mc',pt:'Onde aprendeu português?',nl:'Waar heeft u Portugees geleerd?',opts:['Hoe lang leert u al Portugees?','Spreekt u andere talen?','Waar heeft u Portugees geleerd?','Vindt u Portugees moeilijk?'],ans:2,fb:'Eerlijk antwoord: "Estou a aprender aqui em Portugal" = ik leer het hier in Portugal.'},
+  {cat:'social',diff:2,type:'mc',pt:'Qual é a sua parte favorita de Portugal?',nl:'Wat is uw favoriete deel van Portugal?',opts:['Wat is uw favoriete Portugees gerecht?','Wanneer bent u naar Portugal verhuisd?','Wat is uw favoriete deel van Portugal?','Bezoekt u veel?'],ans:2,fb:'Goede gespreksopener met buren of nieuwe kennissen.'},
+  {cat:'social',diff:3,type:'mc',pt:'Estou a habituar-me ao estilo de vida português.',nl:'Ik raak gewend aan de Portugese manier van leven.',opts:['Ik houd van de Portugese cultuur.','Ik raak gewend aan de Portugese manier van leven.','Ik begrijp de Portugezen.','Ik pas me aan.'],ans:1,fb:'"Habituar-se a" = wennen aan. De Portugese levenswijze is relaxter dan de Nederlandse!'},
+  {cat:'social',diff:1,type:'mc',pt:'Fala inglês?',nl:'Spreekt u Engels?',opts:['Spreekt u Frans?','Spreekt u Duits?','Spreekt u Engels?','Spreekt u Spaans?'],ans:2,fb:'Noodvraag als het Portugees niet lukt. Veel Portugezen spreken redelijk Engels.'},
+  {cat:'social',diff:2,type:'mc',pt:'Pode falar mais devagar?',nl:'Kunt u langzamer praten?',opts:['Kunt u luider praten?','Kunt u dat herhalen?','Kunt u langzamer praten?','Kunt u dat opschrijven?'],ans:2,fb:'Essentieel! Portugesen praten snel. Schaam je niet om dit te vragen.'},
+  {cat:'social',diff:2,type:'mc',pt:'Não percebi bem.',nl:'Ik heb het niet goed begrepen.',opts:['Ik begrijp het niet.','Ik heb het niet goed begrepen.','Ik hoor u niet goed.','Wat zei u?'],ans:1,fb:'"Perceber" = begrijpen/snappen · "Não percebi" = ik begreep het niet.'},
+  {cat:'social',diff:3,type:'mc',pt:'Como se diz... em português?',nl:'Hoe zeg je... in het Portugees?',opts:['Wat betekent... in het Portugees?','Hoe schrijf je...?','Hoe zeg je... in het Portugees?','Vertaal dit voor mij.'],ans:2,fb:'Super handig om vocabulaire uit te breiden in gesprekken!'},
+  {cat:'social',diff:2,type:'mc',pt:'Posso tirar uma fotografia aqui?',nl:'Mag ik hier een foto nemen?',opts:['Kunt u een foto van mij nemen?','Mag ik hier een foto nemen?','Mag ik u fotograferen?','Is fotograferen verboden?'],ans:1,fb:'"Tirar uma fotografia" = een foto nemen · "Selfie" is ook gewoon "selfie" in het PT!'},
+  {cat:'social',diff:1,type:'mc',pt:'Que horas são?',nl:'Hoe laat is het?',opts:['Wat is de datum?','Hoe laat is het?','Wanneer is het?','Hoelang duurt het?'],ans:1,fb:'"Que horas são?" = hoe laat is het? · "São duas horas" = het is twee uur.'},
+  {cat:'social',diff:2,type:'mc',pt:'Estou aqui há três meses.',nl:'Ik ben hier al drie maanden.',opts:['Ik ben hier drie maanden geleden gekomen.','Ik ben hier nog maar drie maanden.','Ik ben hier al drie maanden.','Ik ga nog drie maanden blijven.'],ans:2,fb:'"Estou aqui há" + tijd = ik ben hier al X lang. "Há" geeft duur aan.'},
+  {cat:'social',diff:3,type:'mc',pt:'Estou a gostar muito de viver aqui.',nl:'Ik vind het erg leuk om hier te wonen.',opts:['Ik woon hier graag.','Ik vind het erg leuk om hier te wonen.','Ik wil hier blijven wonen.','Het is goed leven hier.'],ans:1,fb:'"Estar a gostar" = het leuk vinden (op dit moment) · "Gostar de viver" = houden van wonen.'},
+  {cat:'social',diff:2,type:'mc',pt:'O tempo está ótimo hoje!',nl:'Het weer is geweldig vandaag!',opts:['Het is warm vandaag.','Het is mooi vandaag.','Het weer is geweldig vandaag!','Het is lekker buiten.'],ans:2,fb:'Altijd een goed gespreksonderwerp. Portugal heeft meer dan 300 zonnige dagen per jaar!'},
+  {cat:'social',diff:3,type:'mc',pt:'É a primeira vez que venho a Portugal.',nl:'Het is de eerste keer dat ik naar Portugal kom.',opts:['Ik bezoek Portugal voor het eerst.','Het is de eerste keer dat ik naar Portugal kom.','Ik ben hier voor het eerst.','Ik ken Portugal nog niet goed.'],ans:1,fb:'"É a primeira vez" = het is de eerste keer · "Primeira" = eerste.'},
+  {cat:'social',diff:2,type:'mc',pt:'Moro aqui há seis meses.',nl:'Ik woon hier al zes maanden.',opts:['Ik ga zes maanden wonen.','Ik woon hier zes maanden.','Ik woon hier al zes maanden.','Ik heb zes maanden gewoond.'],ans:2,fb:'"Moro aqui há" + tijd = ik woon hier al X lang.'},
+  {cat:'social',diff:1,type:'mc',pt:'É muito bonito aqui!',nl:'Het is hier erg mooi!',opts:['Het is hier erg druk.','Het is hier lekker.','Het is hier erg mooi!','Het is hier interessant.'],ans:2,fb:'"Bonito" = mooi · "Lindo" = prachtig · "Feio" = lelijk.'},
+  {cat:'social',diff:3,type:'mc',pt:'Os portugueses são muito simpáticos.',nl:'De Portugezen zijn erg vriendelijk.',opts:['De Portugezen zijn erg bescheiden.','De Portugezen zijn heel rustig.','De Portugezen zijn erg vriendelijk.','De Portugezen zijn heel gastvrij.'],ans:2,fb:'"Simpático/a" = vriendelijk/aardig. Dit is een goed compliment om te geven!'},
+  {cat:'social',diff:2,type:'mc',pt:'Tenho saudades da Holanda.',nl:'Ik mis Nederland.',opts:['Ik verlang naar Nederland.','Ik denk aan Nederland.','Ik mis Nederland.','Ik wil naar Nederland.'],ans:2,fb:'"Ter saudades de" = missen. "Saudade" is het meest Portugese gevoel van allemaal!'},
+
+  // ---- THUIS & WONEN (20) ----
+  {cat:'home_life',diff:1,type:'mc',pt:'Preciso de arranjar casa.',nl:'Ik moet een huis vinden.',opts:['Ik wil een huis kopen.','Ik moet een huis vinden.','Ik zoek een appartement.','Ik wil verhuizen.'],ans:1,fb:'"Arranjar" = vinden/regelen · "Casa" = huis · "Apartamento" = appartement.'},
+  {cat:'home_life',diff:2,type:'mc',pt:'Qual é a renda mensal?',nl:'Wat is de maandelijkse huurprijs?',opts:['Wat zijn de servicekosten?','Wat is de huurprijs per jaar?','Wat is de maandelijkse huurprijs?','Wat is de borgsom?'],ans:2,fb:'"Renda" = huur · "Mensal" = maandelijks · "Anual" = jaarlijks.'},
+  {cat:'home_life',diff:2,type:'mc',pt:'As contas estão incluídas?',nl:'Zijn de rekeningen inbegrepen?',opts:['Is het gemeubileerd?','Zijn huisdieren toegestaan?','Zijn de rekeningen inbegrepen?','Is er een garage?'],ans:2,fb:'"Contas" = rekeningen (water, licht, gas) · "Incluídas" = inbegrepen.'},
+  {cat:'home_life',diff:1,type:'mc',pt:'O meu vizinho faz muito barulho.',nl:'Mijn buurman maakt veel lawaai.',opts:['Mijn buurman is erg aardig.','Mijn buurman maakt veel lawaai.','Mijn buurman helpt mij.','Mijn buurman spreekt Portugees.'],ans:1,fb:'"Vizinho/a" = buurman/buurvrouw · "Barulho" = lawaai/herrie.'},
+  {cat:'home_life',diff:2,type:'mc',pt:'A torneira está a pingar.',nl:'De kraan lekt.',opts:['De kraan is kapot.','De kraan staat open.','De kraan lekt.','De kraan werkt niet.'],ans:2,fb:'"Torneira" = kraan · "Pingar" = druppelen/lekken · "Canalização" = loodgieterswerk.'},
+  {cat:'home_life',diff:2,type:'mc',pt:'Preciso de um canalizador.',nl:'Ik heb een loodgieter nodig.',opts:['Ik heb een elektricien nodig.','Ik heb een loodgieter nodig.','Ik heb een schilder nodig.','Ik heb een timmerman nodig.'],ans:1,fb:'"Canalizador" = loodgieter · "Eletricista" = elektricien · "Pintor" = schilder.'},
+  {cat:'home_life',diff:3,type:'mc',pt:'O contrato termina em dezembro.',nl:'Het contract loopt af in december.',opts:['Het contract begint in december.','Het contract wordt verlengd in december.','Het contract loopt af in december.','Het contract werd getekend in december.'],ans:2,fb:'"Terminar" = aflopen/eindigen · "Contrato" = contract · "Renovar" = verlengen.'},
+  {cat:'home_life',diff:1,type:'mc',pt:'Onde ficam os caixotes do lixo?',nl:'Waar zijn de vuilnisbakken?',opts:['Waar is de brievenbus?','Waar zijn de vuilnisbakken?','Waar is de berging?','Waar zijn de recyclebakken?'],ans:1,fb:'"Caixotes do lixo" = vuilnisbakken · "Reciclagem" = recycling.'},
+  {cat:'home_life',diff:2,type:'mc',pt:'Quando é o dia de recolha do lixo?',nl:'Wanneer is de afvalinzameling?',opts:['Hoe laat komt de vuilnisman?','Wanneer is de afvalinzameling?','Waar breng ik het afval naartoe?','Hoe sorteer ik het afval?'],ans:1,fb:'"Recolha do lixo" = afvalinzameling · "Lixo" = afval/vuil.'},
+  {cat:'home_life',diff:2,type:'mc',pt:'Posso usar a máquina de lavar?',nl:'Mag ik de wasmachine gebruiken?',opts:['Mag ik de droger gebruiken?','Mag ik de afwasmachine gebruiken?','Mag ik de wasmachine gebruiken?','Mag ik de magnetron gebruiken?'],ans:2,fb:'"Máquina de lavar" = wasmachine · "Máquina de secar" = droger.'},
+  {cat:'home_life',diff:3,type:'mc',pt:'Há humidade nas paredes.',nl:'Er is vocht in de muren.',opts:['Er zijn scheuren in de muren.','Er is vocht in de muren.','Er zijn vlekken op de muren.','Er is schimmel op de muren.'],ans:1,fb:'"Humidade" = vocht/vochtigheid — een veelvoorkomend probleem in Portugese huizen!'},
+  {cat:'home_life',diff:1,type:'mc',pt:'Está partido.',nl:'Het is kapot.',opts:['Het is oud.','Het werkt niet.','Het is kapot.','Het is stuk.'],ans:2,fb:'"Partido" = gebroken/kapot (fysiek) · "Avariado" = stuk/defect (apparaten).'},
+  {cat:'home_life',diff:2,type:'mc',pt:'Preciso de mudar a lâmpada.',nl:'Ik moet de lamp vervangen.',opts:['De lamp doet het niet.','De lamp is kapot.','Ik moet de lamp vervangen.','Ik heb een nieuwe lamp nodig.'],ans:2,fb:'"Lâmpada" = (gloei)lamp · "Mudar" = vervangen/wisselen.'},
+  {cat:'home_life',diff:3,type:'mc',pt:'Qual é o NIF do senhorio?',nl:'Wat is het btw-nummer van de verhuurder?',opts:['Wat is het adres van de verhuurder?','Wat is het telefoonnummer?','Wat is het btw-nummer van de verhuurder?','Wat is het bankrekeningnummer?'],ans:2,fb:'"NIF" = Número de Identificação Fiscal = Portugees btw/fiscaal nummer. Nodig voor alles!'},
+  {cat:'home_life',diff:2,type:'mc',pt:'Há estacionamento incluído?',nl:'Is er parkeerplaats inbegrepen?',opts:['Is er een garage?','Is er een parkeerplaats?','Is er parkeerplaats inbegrepen?','Is er een carport?'],ans:2,fb:'"Estacionamento" = parkeerplaats · "Garagem" = garage · "Incluído" = inbegrepen.'},
+  {cat:'home_life',diff:1,type:'mc',pt:'O elevador está avariado.',nl:'De lift is kapot.',opts:['De lift is langzaam.','De lift is kapot.','De lift werkt niet goed.','De lift is vol.'],ans:1,fb:'"Elevador" = lift · "Avariado" = stuk/defect. In Lissabon zijn liften in appartementen soms oud!'},
+  {cat:'home_life',diff:3,type:'mc',pt:'Tenho de pagar a caução.',nl:'Ik moet de borgsom betalen.',opts:['Ik moet de huur betalen.','Ik moet de eerste maand betalen.','Ik moet de borgsom betalen.','Ik moet de kosten betalen.'],ans:2,fb:'"Caução" = borgsom (doorgaans 1-3 maanden huur in Portugal).'},
+  {cat:'home_life',diff:2,type:'mc',pt:'Posso ter animais de estimação?',nl:'Mag ik huisdieren houden?',opts:['Mag ik roken?','Mag ik muziek spelen?','Mag ik huisdieren houden?','Mag ik gasten ontvangen?'],ans:2,fb:'"Animais de estimação" = huisdieren · "Gato" = kat · "Cão" = hond.'},
+  {cat:'home_life',diff:2,type:'mc',pt:'Quando posso ver o apartamento?',nl:'Wanneer kan ik het appartement bezichtigen?',opts:['Is het appartement beschikbaar?','Hoe groot is het appartement?','Wanneer kan ik het appartement bezichtigen?','Wat is het adres van het appartement?'],ans:2,fb:'"Ver" = zien/bezichtigen · "Visita" = bezichtiging.'},
+  {cat:'home_life',diff:3,type:'mc',pt:'O contrato é por um ano ou mais?',nl:'Is het contract voor een jaar of langer?',opts:['Is het contract verlengbaar?','Is het een kortetermijncontract?','Is het contract voor een jaar of langer?','Wanneer eindigt het contract?'],ans:2,fb:'In Portugal is de minimale huurperiode doorgaans 1 jaar.'},
+
+  // ---- NOODGEVALLEN (10) ----
+  {cat:'emergencies',diff:1,type:'mc',pt:'Ajuda!',nl:'Help!',opts:['Stop!','Pas op!','Help!','Brand!'],ans:2,fb:'"Ajuda!" = help! Roep dit hard als je in gevaar bent.'},
+  {cat:'emergencies',diff:1,type:'mc',pt:'Chame a polícia!',nl:'Bel de politie!',opts:['Bel een ambulance!','Bel de brandweer!','Bel de politie!','Bel een dokter!'],ans:2,fb:'Noodnummer Portugal: 112. "Polícia" = politie.'},
+  {cat:'emergencies',diff:1,type:'mc',pt:'Fui roubado/a!',nl:'Ik ben beroofd!',opts:['Ik heb iets verloren.','Ik ben beroofd.','Mijn tas is weg.','Iemand heeft mij aangevallen.'],ans:1,fb:'"Roubar" = stelen/beroven · "Ladrão" = dief. Meld dit bij de politie en bij je bank.'},
+  {cat:'emergencies',diff:2,type:'mc',pt:'Perdi o meu passaporte.',nl:'Ik heb mijn paspoort verloren.',opts:['Mijn paspoort is gestolen.','Ik heb mijn paspoort verloren.','Ik heb mijn portefeuille verloren.','Mijn tas is weg.'],ans:1,fb:'Meld dit bij de politie (voor een aangifte) en bij de Nederlandse ambassade.'},
+  {cat:'emergencies',diff:2,type:'mc',pt:'Há um incêndio!',nl:'Er is brand!',opts:['Er is een ongeluk!','Er is een overstroming!','Er is brand!','Er is gevaar!'],ans:2,fb:'"Incêndio" = brand · "Bombeiros" = brandweer · Bel 112.'},
+  {cat:'emergencies',diff:2,type:'mc',pt:'Preciso de um tradutor.',nl:'Ik heb een tolk nodig.',opts:['Ik heb een advocaat nodig.','Ik heb een tolk nodig.','Ik heb een dokter nodig.','Ik heb hulp nodig.'],ans:1,fb:'"Tradutor" = tolk/vertaler · Handig bij politie of doktersbezoek.'},
+  {cat:'emergencies',diff:1,type:'mc',pt:'Onde é o hospital mais próximo?',nl:'Waar is het dichtstbijzijnde ziekenhuis?',opts:['Waar is de apotheek?','Waar is de dokter?','Waar is het dichtstbijzijnde ziekenhuis?','Waar is de eerste hulp?'],ans:2,fb:'"Mais próximo" = dichtstbijzijnde · "Hospital" = ziekenhuis.'},
+  {cat:'emergencies',diff:3,type:'mc',pt:'Posso fazer uma chamada?',nl:'Mag ik bellen?',opts:['Mag ik mijn telefoon gebruiken?','Mag ik bellen?','Mag ik een bericht sturen?','Mag ik het internet gebruiken?'],ans:1,fb:'Bij de politie of bij verlies van je telefoon.'},
+  {cat:'emergencies',diff:2,type:'mc',pt:'Preciso de fazer uma participação.',nl:'Ik moet een aangifte doen.',opts:['Ik wil een klacht indienen.','Ik moet een aangifte doen.','Ik wil een verklaring afleggen.','Ik heb juridische hulp nodig.'],ans:1,fb:'"Participação" (PT) = aangifte · "Queixa" = klacht/aangifte · Bij diefstal altijd doen voor de verzekering!'},
+  {cat:'emergencies',diff:3,type:'mc',pt:'Tenho direito a um advogado.',nl:'Ik heb recht op een advocaat.',opts:['Ik wil een advocaat.','Ik heb recht op een advocaat.','Ik heb een advocaat nodig.','Mijn advocaat is onderweg.'],ans:1,fb:'"Advogado/a" = advocaat · "Direito" = recht.'},
 ];
 
+// Cat metadata
+const CATS = {
+  greetings:  {label:'Begroetingen',    icon:'👋', color:'#e8c547'},
+  cafe:       {label:'Café & restaurant',icon:'☕', color:'#4ecdc4'},
+  shopping:   {label:'Winkelen',         icon:'🛒', color:'#a78bfa'},
+  directions: {label:'Weg vragen',       icon:'🗺️', color:'#ff6b6b'},
+  transport:  {label:'Transport',        icon:'🚌', color:'#fb923c'},
+  health:     {label:'Gezondheid',       icon:'🏥', color:'#34d399'},
+  social:     {label:'Smalltalk',        icon:'💬', color:'#60a5fa'},
+  home_life:  {label:'Thuis & wonen',   icon:'🏠', color:'#f472b6'},
+  emergencies:{label:'Noodgevallen',    icon:'🚨', color:'#f87171'},
+};
+
 // ---- STATE ----
-let state = JSON.parse(localStorage.getItem('falar_state') || '{}');
-state.totalDone = state.totalDone || 0;
-state.totalCorrect = state.totalCorrect || 0;
-state.catCorrect = state.catCorrect || {ser:0,pres:0,pret:0};
-state.catDone = state.catDone || {ser:0,pres:0,pret:0};
-state.streak = state.streak || 0;
-state.lastDay = state.lastDay || null;
+let S = JSON.parse(localStorage.getItem('falar250') || '{}');
+S.done = S.done||0; S.correct = S.correct||0;
+S.catD = S.catD||{}; S.catC = S.catC||{};
+S.streak = S.streak||0; S.lastDay = S.lastDay||null;
+S.known = S.known||{};
 
-function saveState() { localStorage.setItem('falar_state', JSON.stringify(state)); }
+function save(){ localStorage.setItem('falar250', JSON.stringify(S)); }
 
-function updateStreak() {
+function updateStreak(){
   const today = new Date().toDateString();
-  if (state.lastDay === today) return;
+  if(S.lastDay===today) return;
   const yesterday = new Date(Date.now()-86400000).toDateString();
-  if (state.lastDay === yesterday) state.streak++;
-  else if (state.lastDay !== today) state.streak = 1;
-  state.lastDay = today;
-  saveState();
+  S.streak = S.lastDay===yesterday ? S.streak+1 : 1;
+  S.lastDay = today; save();
 }
 
-// ---- NAVIGATION ----
-let currentScreen = 'home';
-document.querySelectorAll('.nav-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    const s = tab.dataset.screen;
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    document.querySelectorAll('.screen').forEach(sc => sc.classList.remove('active'));
-    document.getElementById('screen-' + s).classList.add('active');
-    currentScreen = s;
-    if (s === 'home') refreshHome();
-    if (s === 'stats') refreshStats();
+// Count per cat
+Object.keys(CATS).forEach(k => {
+  const n = DB.filter(q=>q.cat===k).length;
+  const el = document.getElementById('cnt-'+k);
+  if(el) el.textContent = n;
+});
+
+// ---- NAV ----
+document.querySelectorAll('.ntab').forEach(t => {
+  t.addEventListener('click', () => {
+    const s = t.dataset.s;
+    document.querySelectorAll('.ntab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelectorAll('.scr').forEach(x=>x.classList.remove('active'));
+    document.getElementById('scr-'+s).classList.add('active');
+    if(s==='home') refreshHome();
+    if(s==='stats') refreshStats();
+    if(s==='flash') renderFlashCats();
   });
 });
 
-// ---- QUIZ ENGINE ----
-let quizQ = [], quizIdx = 0, quizCorrect = 0, quizMode = 'all';
-
-function getQuestions(mode) {
-  let pool = QUESTIONS;
-  if (mode === 'ser') pool = QUESTIONS.filter(q => q.cat === 'ser');
-  else if (mode === 'pres') pool = QUESTIONS.filter(q => q.cat === 'pres');
-  else if (mode === 'pret') pool = QUESTIONS.filter(q => q.cat === 'pret');
-  else if (mode === 'hard') pool = QUESTIONS.filter(q => q.diff === 3);
-  return shuffle([...pool]).slice(0, Math.min(15, pool.length));
-}
-
-function shuffle(arr) {
-  for (let i = arr.length-1; i>0; i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
-  }
-  return arr;
-}
-
-function startQuiz(mode) {
-  quizMode = mode;
-  quizQ = getQuestions(mode);
-  quizIdx = 0;
-  quizCorrect = 0;
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector('[data-screen="quiz"]').classList.add('active');
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-quiz').classList.add('active');
-  renderQuestion();
-}
-
-function renderQuestion() {
-  const container = document.getElementById('quiz-container');
-  if (quizIdx >= quizQ.length) { renderResult(); return; }
-  const q = quizQ[quizIdx];
-  const catColors = {ser:'#e8c547',pres:'#4ecdc4',pret:'#ff6b6b'};
-  const catLabels = {ser:'Ser / estar',pres:'Tegenwoordige tijd',pret:'Verleden tijd'};
-  const pct = Math.round(quizIdx/quizQ.length*100);
-
-  const zinHtml = q.zin.replace('___', '<span class="q-blank">___</span>');
-
-  let inputHtml = '';
-  if (q.type === 'mc') {
-    inputHtml = `<div class="mc-grid">${q.opts.map((o,i) =>
-      `<button class="mc-opt" data-i="${i}">${o}</button>`
-    ).join('')}</div>`;
-  } else {
-    inputHtml = `<div class="inp-wrap">
-      <input type="text" class="oef-inp" placeholder="Typ de werkwoordsvorm..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-      <button class="inp-submit" id="inp-go">↵</button>
-    </div>`;
-  }
-
-  container.innerHTML = `
-    <div class="quiz-header">
-      <button class="quiz-back" id="quiz-back-btn">← Terug</button>
-      <div class="quiz-counter">${quizIdx+1} / ${quizQ.length}</div>
-      <div class="quiz-score-pill">✓ ${quizCorrect}</div>
-    </div>
-    <div class="progress-track"><div class="progress-thumb" style="width:${pct}%"></div></div>
-    <div class="question-card">
-      <div class="q-cat">
-        <span class="q-cat-dot" style="background:${catColors[q.cat]}"></span>
-        <span style="color:${catColors[q.cat]}">${catLabels[q.cat]}</span>
-      </div>
-      <div class="q-text">${zinHtml}</div>
-      <div class="q-hint">${q.tr}</div>
-      ${q.type==='inp' ? `<span class="q-verb-hint">${q.zin.match(/\(([^)]+)\)/)?.[1] || ''}</span>` : ''}
-    </div>
-    <div class="answer-area">${inputHtml}</div>
-    <div class="feedback-box" id="fb"></div>
-    <button class="next-btn" id="next-btn">${quizIdx < quizQ.length-1 ? 'Volgende →' : 'Resultaat bekijken →'}</button>
-  `;
-
-  document.getElementById('quiz-back-btn').addEventListener('click', () => {
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector('[data-screen="home"]').classList.add('active');
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-home').classList.add('active');
-    refreshHome();
-  });
-
-  document.getElementById('next-btn').addEventListener('click', () => {
-    quizIdx++;
-    renderQuestion();
-  });
-
-  if (q.type === 'mc') {
-    container.querySelectorAll('.mc-opt').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const chosen = parseInt(btn.dataset.i);
-        container.querySelectorAll('.mc-opt').forEach(b => {
-          const k = parseInt(b.dataset.i);
-          if (k === q.ans) b.classList.add('correct');
-          else if (k === chosen) b.classList.add('wrong');
-          else b.classList.add('dimmed');
-          b.disabled = true;
-        });
-        handleAnswer(chosen === q.ans, q.opts[q.ans], q);
-      });
-    });
-  } else {
-    const inp = container.querySelector('.oef-inp');
-    const goBtn = container.querySelector('#inp-go');
-    const submit = () => {
-      const val = inp.value.trim();
-      if (!val) return;
-      if (goBtn.disabled) return;
-      goBtn.disabled = true;
-      inp.disabled = true;
-      const ok = val.toLowerCase() === q.ans.toLowerCase();
-      inp.classList.add(ok ? 'correct' : 'wrong');
-      handleAnswer(ok, q.ans, q);
-    };
-    goBtn.addEventListener('click', submit);
-    inp.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
-    setTimeout(() => inp.focus(), 100);
-  }
-}
-
-function handleAnswer(ok, ans, q) {
-  const fb = document.getElementById('fb');
-  fb.className = 'feedback-box ' + (ok ? 'ok' : 'nope');
-  fb.innerHTML = ok
-    ? `✓ Correct! <strong>${ans}</strong>`
-    : `✗ Juist: <strong>${ans}</strong> — ${q.fb}`;
-  fb.style.display = 'block';
-  document.getElementById('next-btn').style.display = 'block';
-
-  if (ok) quizCorrect++;
-  state.totalDone++;
-  state.catDone[q.cat] = (state.catDone[q.cat]||0) + 1;
-  if (ok) {
-    state.totalCorrect++;
-    state.catCorrect[q.cat] = (state.catCorrect[q.cat]||0) + 1;
-  }
-  updateStreak();
-  saveState();
-}
-
-function renderResult() {
-  const pct = Math.round(quizCorrect/quizQ.length*100);
-  const emojis = pct>=90?'🏆':pct>=70?'⭐':pct>=50?'💪':'📚';
-  const labels = pct>=90?['Uitstekend!','Je beheerst dit geweldig. Probeer de uitdaging!']:
-                 pct>=70?['Goed bezig!','Blijf oefenen — je zit op de goede weg.']:
-                 pct>=50?['Niet slecht!','Herhaal de patronen en probeer opnieuw.']:
-                         ['Blijven oefenen!','Elke keer beter. Geduld loont!'];
-
-  document.getElementById('quiz-container').innerHTML = `
-    <div class="result-card">
-      <span class="result-emoji">${emojis}</span>
-      <span class="result-score">${quizCorrect}/${quizQ.length}</span>
-      <div class="result-label">${labels[0]}</div>
-      <div class="result-sub">${labels[1]}</div>
-    </div>
-    <div class="result-breakdown">
-      <div class="breakdown-item">
-        <span class="breakdown-num">${pct}%</span>
-        <span class="breakdown-label">Correctheid</span>
-      </div>
-      <div class="breakdown-item">
-        <span class="breakdown-num">${state.streak}</span>
-        <span class="breakdown-label">🔥 Streak</span>
-      </div>
-    </div>
-    <button class="replay-btn" id="replay-btn">Opnieuw proberen</button>
-    <button class="home-btn" id="home-btn">Terug naar start</button>
-  `;
-
-  document.getElementById('replay-btn').addEventListener('click', () => startQuiz(quizMode));
-  document.getElementById('home-btn').addEventListener('click', () => {
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector('[data-screen="home"]').classList.add('active');
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-home').classList.add('active');
-    refreshHome();
-  });
+function goScreen(s){
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`[data-s="${s}"]`).classList.add('active');
+  document.querySelectorAll('.scr').forEach(x=>x.classList.remove('active'));
+  document.getElementById('scr-'+s).classList.add('active');
 }
 
 // ---- HOME ----
-document.querySelectorAll('.lesson-card').forEach(card => {
-  card.addEventListener('click', () => startQuiz(card.dataset.mode));
+document.querySelectorAll('.cat-card[data-mode]').forEach(c=>{
+  c.addEventListener('click',()=>startQuiz(c.dataset.mode));
 });
 
-function refreshHome() {
-  document.getElementById('stat-total').textContent = state.totalDone;
-  const pct = state.totalDone > 0 ? Math.round(state.totalCorrect/state.totalDone*100)+'%' : '—';
-  document.getElementById('stat-pct').textContent = pct;
-  document.getElementById('stat-streak').textContent = state.streak;
-  document.getElementById('streak-num').textContent = state.streak;
-
-  const serDone = state.catDone.ser||0, serOk = state.catCorrect.ser||0;
-  const presDone = state.catDone.pres||0, presOk = state.catCorrect.pres||0;
-  const pretDone = state.catDone.pret||0, pretOk = state.catCorrect.pret||0;
-
-  document.getElementById('prog-ser').textContent = serDone ? `${serOk}/${serDone}` : '→';
-  document.getElementById('prog-pres').textContent = presDone ? `${presOk}/${presDone}` : '→';
-  document.getElementById('prog-pret').textContent = pretDone ? `${pretOk}/${pretDone}` : '→';
-  document.getElementById('prog-all').textContent = state.totalDone ? `${state.totalCorrect}/${state.totalDone}` : '→';
+function refreshHome(){
+  document.getElementById('h-done').textContent = S.done;
+  document.getElementById('h-pct').textContent = S.done>0 ? Math.round(S.correct/S.done*100)+'%' : '—';
+  document.getElementById('h-streak').textContent = S.streak;
+  document.getElementById('streak-num').textContent = S.streak;
 }
 
-function refreshStats() {
-  const cats = ['ser','pres','pret'];
-  cats.forEach(cat => {
-    const d = state.catDone[cat]||0;
-    const c = state.catCorrect[cat]||0;
-    const pct = d>0 ? Math.round(c/d*100) : 0;
-    document.getElementById('pr-'+cat).style.width = pct+'%';
-    document.getElementById('pr-'+cat+'-val').textContent = d>0 ? pct+'%' : '—';
+// ---- QUIZ ----
+let qList=[], qIdx=0, qOk=0, qMode='all';
+
+function getQ(mode){
+  let pool = mode==='all' ? DB
+    : mode==='hard' ? DB.filter(q=>q.diff===3)
+    : DB.filter(q=>q.cat===mode);
+  return shuffle([...pool]).slice(0,Math.min(20,pool.length));
+}
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a; }
+
+function startQuiz(mode){
+  qMode=mode; qList=getQ(mode); qIdx=0; qOk=0;
+  goScreen('quiz'); renderQ();
+}
+
+function renderQ(){
+  const wrap = document.getElementById('quiz-wrap');
+  if(qIdx>=qList.length){ renderResult(); return; }
+  const q = qList[qIdx];
+  const cat = CATS[q.cat]||{label:q.cat,icon:'📝',color:'#e8c547'};
+  const pct = Math.round(qIdx/qList.length*100);
+
+  let ctrl = '';
+  if(q.type==='mc'){
+    ctrl = `<div class="mc-list">${q.opts.map((o,i)=>`<button class="mc-opt" data-i="${i}">${o}</button>`).join('')}</div>`;
+  }
+
+  wrap.innerHTML=`
+    <div class="qhdr">
+      <button class="qback" id="qb">← Terug</button>
+      <span class="qctr">${qIdx+1}/${qList.length}</span>
+      <span class="qscore">✓ ${qOk}</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="qcard">
+      <div class="qcat"><span class="qcat-dot" style="background:${cat.color}"></span><span style="color:${cat.color}">${cat.icon} ${cat.label}</span></div>
+      <div class="qpt">${q.pt}</div>
+      <div class="qnl">${q.nl}</div>
+      <span class="qtag">Diff ${'⭐'.repeat(q.diff)}</span>
+    </div>
+    <div class="answer-area">${ctrl}</div>
+    <div class="fb" id="fb"></div>
+    <button class="nxt" id="nxt">${qIdx<qList.length-1?'Volgende →':'Resultaat →'}</button>
+  `;
+
+  document.getElementById('qb').addEventListener('click',()=>{goScreen('home');refreshHome();});
+  document.getElementById('nxt').addEventListener('click',()=>{qIdx++;renderQ();});
+
+  if(q.type==='mc'){
+    wrap.querySelectorAll('.mc-opt').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const i=parseInt(btn.dataset.i);
+        wrap.querySelectorAll('.mc-opt').forEach(b=>{
+          const k=parseInt(b.dataset.i);
+          b.classList.add(k===q.ans?'ok':(k===i?'nope':'dim'));
+          b.disabled=true;
+        });
+        markAnswer(i===q.ans, q.opts[q.ans], q.fb, q);
+      });
+    });
+  }
+}
+
+function markAnswer(ok, ans, fb, q){
+  const el = document.getElementById('fb');
+  el.className='fb '+(ok?'ok':'nope');
+  el.innerHTML = ok ? `✓ Correct! <strong>${ans}</strong>` : `✗ Juist: <strong>${ans}</strong> — ${fb}`;
+  el.style.display='block';
+  document.getElementById('nxt').style.display='block';
+  if(ok) qOk++;
+  S.done++; S.catD[q.cat]=(S.catD[q.cat]||0)+1;
+  if(ok){ S.correct++; S.catC[q.cat]=(S.catC[q.cat]||0)+1; }
+  updateStreak(); save();
+}
+
+function renderResult(){
+  const pct = Math.round(qOk/qList.length*100);
+  const [em,lbl,sub] = pct>=90?['🏆','Uitstekend!','Fantastisch resultaat!']:
+    pct>=70?['⭐','Goed bezig!','Blijf oefenen!']:
+    pct>=50?['💪','Niet slecht!','Je maakt vooruitgang.']:
+    ['📚','Blijven oefenen!','Elke dag beter.'];
+  document.getElementById('quiz-wrap').innerHTML=`
+    <div class="res-card">
+      <span class="res-em">${em}</span>
+      <span class="res-sc">${qOk}/${qList.length}</span>
+      <div class="res-lbl">${lbl}</div>
+      <div class="res-sub">${sub} (${pct}% correct)</div>
+    </div>
+    <div class="res-grid">
+      <div class="res-item"><span>${pct}%</span><span>Correctheid</span></div>
+      <div class="res-item"><span>${S.streak}🔥</span><span>Streak</span></div>
+      <div class="res-item"><span>${S.done}</span><span>Totaal gedaan</span></div>
+      <div class="res-item"><span>${S.done>0?Math.round(S.correct/S.done*100):0}%</span><span>Totaal correct</span></div>
+    </div>
+    <button class="rbtn" id="rr">Opnieuw proberen</button>
+    <button class="rbtn primary" id="rh">Terug naar start</button>
+  `;
+  document.getElementById('rr').addEventListener('click',()=>startQuiz(qMode));
+  document.getElementById('rh').addEventListener('click',()=>{goScreen('home');refreshHome();});
+}
+
+// ---- FLASHCARDS ----
+function renderFlashCats(){
+  const grid = document.getElementById('flash-cats');
+  document.getElementById('flash-cat-select').style.display='block';
+  document.getElementById('flash-wrap').style.display='none';
+  grid.innerHTML = [
+    {mode:'all',label:'Alle 250',icon:'🎯'},
+    ...Object.entries(CATS).map(([k,v])=>({mode:k,label:v.label,icon:v.icon}))
+  ].map(c=>`<div class="cat-card" data-fc="${c.mode}">
+    <span class="cc-icon">${c.icon}</span>
+    <div class="cc-name">${c.label}</div>
+  </div>`).join('');
+  grid.querySelectorAll('.cat-card').forEach(c=>{
+    c.addEventListener('click',()=>startFlash(c.dataset.fc));
   });
 }
 
-// ---- INSTALL BANNER ----
+let fcList=[], fcIdx=0, fcKnew=0, fcDidnt=0;
+
+function startFlash(mode){
+  const pool = mode==='all'?DB:DB.filter(q=>q.cat===mode);
+  fcList = shuffle([...pool]);
+  fcIdx=0; fcKnew=0; fcDidnt=0;
+  document.getElementById('flash-cat-select').style.display='none';
+  document.getElementById('flash-wrap').style.display='block';
+  renderFlash();
+}
+
+function renderFlash(){
+  const wrap = document.getElementById('flash-wrap');
+  if(fcIdx>=fcList.length){
+    wrap.innerHTML=`
+      <div class="res-card">
+        <span class="res-em">🎴</span>
+        <span class="res-sc">${fcKnew}/${fcList.length}</span>
+        <div class="res-lbl">Sessie klaar!</div>
+        <div class="res-sub">✓ Kende: ${fcKnew} &nbsp; ✗ Nog leren: ${fcDidnt}</div>
+      </div>
+      <button class="rbtn" id="fr">Opnieuw</button>
+      <button class="rbtn primary" id="fh">Terug</button>
+    `;
+    document.getElementById('fr').addEventListener('click',()=>startFlash('all'));
+    document.getElementById('fh').addEventListener('click',()=>renderFlashCats());
+    return;
+  }
+  const q = fcList[fcIdx];
+  const cat = CATS[q.cat]||{label:q.cat,color:'#e8c547'};
+  wrap.innerHTML=`
+    <div class="flash-ctr">${fcIdx+1} / ${fcList.length} &nbsp;·&nbsp; ✓${fcKnew} &nbsp;✗${fcDidnt}</div>
+    <div class="flash-scene" id="fscene">
+      <div class="flash-card" id="fcard">
+        <div class="flash-face flash-front">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:${cat.color};margin-bottom:12px">${cat.label}</div>
+          <div class="flash-pt">${q.pt}</div>
+          <div class="flash-hint">Tik om te onthullen</div>
+        </div>
+        <div class="flash-face flash-back">
+          <div class="flash-nl">${q.nl}</div>
+          <div style="margin-top:12px;font-size:13px;color:var(--text2);line-height:1.5">${q.fb}</div>
+        </div>
+      </div>
+    </div>
+    <div class="flash-nav">
+      <button class="flash-btn didnt" id="fd">✗ Wist ik niet</button>
+      <button class="flash-btn knew" id="fk">✓ Kende ik!</button>
+    </div>
+  `;
+  document.getElementById('fscene').addEventListener('click',()=>{
+    document.getElementById('fcard').classList.toggle('flipped');
+  });
+  document.getElementById('fd').addEventListener('click',()=>{fcDidnt++;fcIdx++;renderFlash();});
+  document.getElementById('fk').addEventListener('click',()=>{fcKnew++;fcIdx++;renderFlash();});
+}
+
+// ---- STATS ----
+function refreshStats(){
+  const rows = document.getElementById('stats-rows');
+  rows.innerHTML = Object.entries(CATS).map(([k,v])=>{
+    const d=S.catD[k]||0, c=S.catC[k]||0;
+    const pct = d>0?Math.round(c/d*100):0;
+    return `<div class="prow">
+      <div class="prow-top"><span class="prow-name">${v.icon} ${v.label}</span><span class="prow-val">${d>0?pct+'%':'—'}</span></div>
+      <div class="pbar"><div class="pfill" style="width:${pct}%;background:${v.color}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ---- INSTALL ----
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-if (isIOS && !isStandalone) {
-  document.getElementById('install-banner').style.display = 'flex';
+const isSA = window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone;
+if(isIOS&&!isSA) document.getElementById('install-banner').style.display='flex';
+
+// ---- SERVICE WORKER ----
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 
 // ---- INIT ----
 refreshHome();
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  });
-}
 </script>
 </body>
 </html>
